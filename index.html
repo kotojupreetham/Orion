@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workspaces</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+    <div id="loading-screen" class="active">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="login-screen" class="hidden">
+        <div class="login-container">
+            <h1>Welcome to Workspaces</h1>
+            <p>Manage your ideas and projects seamlessly.</p>
+            <button id="login-btn" class="primary-btn">Sign in with Google</button>
+        </div>
+    </div>
+
+    <div id="app-screen" class="hidden">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button id="new-workspace-btn" class="primary-btn full-width">+ New Workspace</button>
+            </div>
+            
+            <div class="workspace-list-container">
+                <p class="section-title">Your Workspaces</p>
+                <div id="workspace-list">
+                    </div>
+                <p id="no-workspace-msg" class="hidden text-muted">No workspaces yet.</p>
+            </div>
+
+            <div class="user-profile">
+                <img id="user-photo" src="" alt="User Photo">
+                <div class="user-info">
+                    <span id="user-name">User Name</span>
+                    <button id="logout-btn" class="text-btn">Logout</button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <button id="mobile-menu-btn" class="mobile-only text-btn">☰ Menu</button>
+            
+            <div id="empty-state" class="active">
+                <h2>Select or create a workspace to begin.</h2>
+            </div>
+
+            <div id="workspace-view" class="hidden">
+                <header class="workspace-header">
+                    <h2 id="workspace-title" contenteditable="true">Workspace Title</h2>
+                    <span class="text-muted text-small">Title auto-saves on blur</span>
+                </header>
+                
+                <div class="messages-container" id="messages-container">
+                    </div>
+
+                <div class="input-area">
+                    <textarea id="message-input" placeholder="Type your ideas here..."></textarea>
+                    <button id="send-btn" class="primary-btn">Send</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
