@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NyxTutor — Assessment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="onboarding.css">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="ob-progress-track">
+        <div class="ob-progress-fill" id="ob-progress"></div>
+    </div>
+
+    <!-- Layer Badge -->
+    <div class="layer-badge" id="layer-badge">Layer 1</div>
+
+    <!-- Main Card -->
+    <div class="ob-card" id="ob-card">
+
+        <!-- Screen 0: Welcome -->
+        <div class="ob-screen active" id="screen-welcome">
+            <div class="welcome-logo">Nyx<span>Tutor</span></div>
+            <h1 class="welcome-title">Adaptive Assessment</h1>
+            <p class="welcome-sub">~90 seconds · 7–8 adaptive questions · No right or wrong answers</p>
+
+            <div class="level-grid">
+                <div class="level-chip explorer">🌱 Explorer</div>
+                <div class="level-chip learner">📖 Learner</div>
+                <div class="level-chip builder">🔨 Builder</div>
+                <div class="level-chip catalyst">🚀 Catalyst</div>
+            </div>
+
+            <p class="welcome-desc">
+                We'll ask you scenario-based questions that adapt based on your answers.
+                The system profiles <em>how you think</em>, not what you know.
+            </p>
+
+            <button class="ob-btn primary" id="start-btn">
+                Begin Assessment
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+        </div>
+
+        <!-- Screen Q: Dynamic Question Screen -->
+        <div class="ob-screen hidden" id="screen-question">
+            <div class="q-meta">
+                <span class="q-step" id="q-step">Step 1 of 7</span>
+                <span class="q-branch-tag hidden" id="q-branch-tag">Branch A</span>
+            </div>
+            <h2 class="q-title" id="q-title">Question Title</h2>
+            <p class="q-text" id="q-text">Question text goes here.</p>
+
+            <!-- MCQ / Scenario Options -->
+            <div class="q-options" id="q-options"></div>
+
+            <!-- Multi Select Chips -->
+            <div class="q-chips" id="q-chips"></div>
+
+            <!-- Ranking -->
+            <div class="q-ranking" id="q-ranking"></div>
+
+            <!-- Text Input -->
+            <div class="q-text-area hidden" id="q-text-area">
+                <textarea id="q-textarea" placeholder="" rows="4"></textarea>
+                <p class="text-hint">Write at least 20 characters to continue</p>
+            </div>
+
+            <!-- Navigation -->
+            <div class="q-nav">
+                <button class="ob-btn ghost" id="back-btn">← Back</button>
+                <button class="ob-btn primary disabled" id="next-btn">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Screen Result -->
+        <div class="ob-screen hidden" id="screen-result">
+            <div class="result-icon" id="result-icon">🌱</div>
+            <div class="result-level-name" id="result-level">Explorer</div>
+            <div class="result-tagline" id="result-tagline">Starting Point</div>
+
+            <div class="score-bars" id="score-bars"></div>
+
+            <div class="result-desc-card" id="result-desc"></div>
+
+            <div class="result-path-info" id="result-path">
+                <span class="path-label">Your path:</span>
+                <span id="path-text">—</span>
+            </div>
+
+            <button class="ob-btn primary full" id="enter-btn">
+                Enter Workspace →
+            </button>
+        </div>
+    </div>
+
+    <script type="module" src="onboarding.js"></script>
+</body>
+</html>
