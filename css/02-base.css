@@ -1,0 +1,62 @@
+/* ═══════════════════════════════════════
+   02-base.css — 3D Camera & Global Reset
+   ═══════════════════════════════════════ */
+
+*, *::before, *::after {
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text);
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+
+    /* Dynamic Flashlight Background — uses theme vars */
+    background:
+        radial-gradient(
+            ellipse 800px 600px at var(--mouse-x) var(--mouse-y),
+            var(--light-spot-a) 0%,
+            transparent 70%
+        ),
+        radial-gradient(
+            ellipse 600px 400px at calc(100% - var(--mouse-x)) calc(100% - var(--mouse-y)),
+            var(--light-spot-b) 0%,
+            transparent 70%
+        ),
+        linear-gradient(180deg, var(--bg-gradient-a) 0%, var(--bg-gradient-b) 100%);
+
+    /* Global 3D Viewport */
+    perspective: 1500px;
+    perspective-origin: 50% 50%;
+}
+
+/* Kill scrollbars */
+::-webkit-scrollbar { width: 0; height: 0; }
+* { scrollbar-width: none; }
+
+/* Selection */
+::selection {
+    background: var(--cyan);
+    color: var(--bg-primary);
+}
+
+.no-select { user-select: none; -webkit-user-select: none; }
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+}
+
+code, .mono {
+    font-family: 'JetBrains Mono', monospace;
+}

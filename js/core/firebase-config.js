@@ -4,14 +4,14 @@ import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDxPx7dhn3gEbFl54DMrd9eRlkjZ9lbqIk",
-  authDomain: "orion-52356.firebaseapp.com",
-  databaseURL: "https://orion-52356-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "orion-52356",
-  storageBucket: "orion-52356.firebasestorage.app",
-  messagingSenderId: "66921521599",
-  appId: "1:66921521599:web:dc6bb1d31515848f0c410a",
-  measurementId: "G-TFJH37VZYC"
+  apiKey: "AIzaSyB67c13kcF0O1YoW7WvOzqfYmHetVJhdHs",
+  authDomain: "todo-5496c.firebaseapp.com",
+  databaseURL: "https://todo-5496c-default-rtdb.firebaseio.com",
+  projectId: "todo-5496c",
+  storageBucket: "todo-5496c.firebasestorage.app",
+  messagingSenderId: "725814199088",
+  appId: "1:725814199088:web:d189d46b5f5054b2f33ef5",
+  measurementId: "G-5DKXVMX9S3"
 };
 
 // Initialize Firebase

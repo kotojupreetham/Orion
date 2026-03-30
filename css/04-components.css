@@ -1,0 +1,181 @@
+/* ═══════════════════════════════════════════
+   04-components.css — Glass, Glow & Extrusion
+   ═══════════════════════════════════════════ */
+
+/* ── Glass Panel Material ── */
+.glass {
+    background: var(--surface);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow:
+        0 8px 32px var(--shadow-color),
+        inset 0 1px 0 var(--inset-glow);
+}
+
+/* ── Logo ── */
+.logo {
+    font-family: 'Outfit'; font-weight: 900; font-size: 1.6rem;
+    color: var(--cyan);
+    text-shadow: var(--logo-shadow);
+}
+.logo span { color: var(--text); text-shadow: none; }
+
+/* ── Buttons ── */
+.btn {
+    padding: 10px 22px; border-radius: var(--radius-sm);
+    font-family: 'Inter'; font-weight: 600; font-size: 0.85rem;
+    cursor: pointer; border: 1px solid transparent;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent; color: var(--text);
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+.btn:active { transform: translateZ(-10px) scale(0.97); }
+
+.btn-primary {
+    border-color: var(--magenta); color: var(--magenta);
+}
+.btn-primary:hover {
+    background: rgba(255,0,127,0.1);
+    box-shadow: 0 0 24px var(--magenta-glow), inset 0 0 12px rgba(255,0,127,0.08);
+}
+.btn-cyan {
+    border-color: var(--cyan); color: var(--cyan);
+    background: rgba(0,229,255,0.05);
+}
+.btn-cyan:hover {
+    background: rgba(0,229,255,0.15);
+    box-shadow: 0 0 28px var(--cyan-glow);
+}
+.btn-ghost {
+    color: var(--text-muted); border: none;
+}
+.btn-ghost:hover { color: var(--text); }
+
+/* ── Theme Toggle Button ── */
+.theme-toggle {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s, border-color 0.3s, transform 0.3s;
+}
+.theme-toggle:hover {
+    border-color: var(--cyan);
+    background: var(--surface-hover);
+    transform: rotate(30deg);
+}
+.theme-toggle:active {
+    transform: scale(0.9) rotate(30deg);
+}
+
+/* ── Workspace Sidebar Items ── */
+.ws-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; margin-bottom: 6px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: var(--ws-item-bg);
+    transform-style: preserve-3d;
+}
+.ws-item:hover {
+    background: var(--surface-hover);
+    border-color: var(--border);
+}
+.ws-item.active {
+    background: var(--ws-active-bg);
+    border-color: var(--cyan);
+    box-shadow: -3px 0 16px var(--cyan-glow);
+}
+.ws-item .ws-icon { font-size: 1.4rem; flex-shrink: 0; }
+.ws-item .ws-name {
+    flex: 1; font-weight: 600; font-size: 0.9rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    color: var(--text);
+}
+.ws-item .ws-del {
+    opacity: 0; padding: 4px 8px; font-size: 0.7rem;
+}
+.ws-item:hover .ws-del { opacity: 1; }
+
+/* ── Hover Extrusion ── */
+.extrude:hover {
+    box-shadow:
+        0 12px 48px var(--cyan-glow),
+        0 0 0 1px var(--border-hover);
+}
+
+/* ── Text Input / Textarea ── */
+.field {
+    width: 100%; padding: 16px 20px;
+    background: var(--input-bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text); font-family: 'Inter'; font-size: 1rem;
+    resize: none; outline: none;
+    transition: all 0.3s ease;
+}
+.field:focus {
+    border-color: var(--cyan);
+    background: var(--surface-hover);
+    box-shadow: 0 0 24px rgba(0,229,255,0.2), inset 0 0 12px rgba(0,229,255,0.1);
+}
+.field::placeholder {
+    color: var(--text-muted);
+}
+
+/* ── Chat Messages ── */
+.msg {
+    display: flex; gap: 14px;
+    padding: 18px 20px; margin-bottom: 14px;
+    border-radius: var(--radius-md);
+    background: var(--msg-bg);
+    border-left: 3px solid var(--purple);
+    transform-style: preserve-3d;
+}
+.msg-tag {
+    font-family: 'JetBrains Mono'; font-weight: 700; font-size: 0.8rem;
+    color: var(--cyan); flex-shrink: 0; padding-top: 2px;
+}
+.msg-body { line-height: 1.65; font-size: 0.95rem; color: var(--text); }
+
+/* ── Right Panel Info ── */
+.rp-section { margin-bottom: 28px; }
+.rp-label {
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 10px;
+}
+.rp-value { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+.progress-track {
+    height: 10px; border-radius: 5px;
+    background: var(--ws-item-bg);
+    overflow: hidden; margin-top: 8px;
+}
+.progress-fill {
+    height: 100%; border-radius: 5px;
+    background: linear-gradient(90deg, var(--cyan), var(--magenta));
+    transition: width 1.2s var(--ease-elastic);
+}
+
+/* ── Google Login Button ── */
+.google-btn {
+    padding: 14px 28px; font-size: 1rem; font-weight: 600;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--ws-item-bg);
+    color: var(--text); cursor: pointer;
+    display: inline-flex; align-items: center; gap: 12px;
+}
+.google-btn:hover {
+    background: var(--surface-hover);
+    box-shadow: 0 0 32px var(--cyan-glow);
+}
+.google-btn svg { flex-shrink: 0; }
