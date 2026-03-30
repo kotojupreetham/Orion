@@ -1,0 +1,564 @@
+/* =============================================
+   ORION SIMULATION ENGINE — Power BI Grid Styles
+   ============================================= */
+:root {
+    --bg-main: #0a0e17;
+    --bg-card: #111827;
+    --bg-card-hover: #151d2e;
+    --border: rgba(255,255,255,0.06);
+    --border-accent: rgba(59,130,246,0.3);
+    --accent: #3b82f6;
+    --accent-glow: rgba(59,130,246,0.15);
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --orange: #f97316;
+    --red: #ef4444;
+    --text-white: #e2e8f0;
+    --text: #94a3b8;
+    --text-dim: #64748b;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --font: 'Inter', -apple-system, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: var(--font);
+    background: var(--bg-main);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* =============================================
+   TOP METRICS BAR
+   ============================================= */
+.sim-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: rgba(17,24,39,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.sim-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.sim-logo {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+}
+.sim-logo-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 500;
+}
+.sim-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+}
+.sim-idea-label {
+    font-size: 13px;
+    color: var(--text);
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.sim-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.metric-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+.metric-pill.flash {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+}
+.mp-icon { font-size: 14px; }
+.mp-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.mp-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-white);
+}
+.back-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 8px;
+}
+.back-btn:hover {
+    background: rgba(239,68,68,0.1);
+    border-color: rgba(239,68,68,0.3);
+    color: var(--red);
+}
+
+/* =============================================
+   MAIN GRID — Power BI Style
+   ============================================= */
+.sim-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 16px;
+    padding: 20px 24px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+}
+
+/* =============================================
+   SIMULATION CARDS
+   ============================================= */
+.sim-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    min-height: 340px;
+}
+.sim-card:hover {
+    border-color: var(--border-accent);
+    box-shadow: 0 0 30px rgba(59,130,246,0.05);
+}
+.sim-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.015);
+}
+.sim-card-icon { font-size: 20px; }
+.sim-card-header h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-white);
+    flex: 1;
+}
+.sim-card-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: var(--accent-glow);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.sim-card-body {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+.sim-card-body::-webkit-scrollbar { width: 4px; }
+.sim-card-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Card Color Accents */
+.sim-card-decision .sim-card-header { border-left: 3px solid var(--accent); }
+.sim-card-resource .sim-card-header { border-left: 3px solid var(--green); }
+.sim-card-stakeholder .sim-card-header { border-left: 3px solid var(--yellow); }
+.sim-card-impact .sim-card-header { border-left: 3px solid var(--orange); }
+
+/* =============================================
+   DECISION SIMULATOR
+   ============================================= */
+.sim-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+    gap: 16px;
+}
+.sim-empty-state p {
+    color: var(--text-dim);
+    font-size: 14px;
+}
+.sim-start-btn, .sim-next-btn {
+    padding: 10px 24px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.sim-start-btn:hover, .sim-next-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+.scenario-context {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.02);
+    border-left: 2px solid var(--accent);
+    border-radius: 4px;
+    line-height: 1.5;
+}
+.scenario-question {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-white);
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+.scenario-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.scenario-choice {
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.4;
+}
+.scenario-choice:hover {
+    background: var(--accent-glow);
+    border-color: var(--border-accent);
+    color: var(--text-white);
+}
+.scenario-outcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    padding: 16px;
+    animation: fadeIn 0.4s ease;
+}
+.outcome-icon { font-size: 40px; }
+.outcome-text {
+    font-size: 15px;
+    color: var(--text-white);
+    line-height: 1.5;
+    max-width: 400px;
+}
+.outcome-effects {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.effect-tag {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.effect-tag.positive { background: rgba(16,185,129,0.15); color: var(--green); }
+.effect-tag.negative { background: rgba(239,68,68,0.15); color: var(--red); }
+
+/* =============================================
+   RESOURCE ALLOCATION
+   ============================================= */
+.resource-instructions {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+.slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+.slider-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+.slider-label span:first-child {
+    color: var(--text-white);
+    font-weight: 600;
+}
+.slider-label span:last-child {
+    color: var(--accent);
+    font-weight: 700;
+}
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg-card);
+    box-shadow: 0 0 8px rgba(59,130,246,0.4);
+}
+.resource-projection {
+    padding: 16px;
+    background: rgba(255,255,255,0.02);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    min-height: 80px;
+}
+.projection-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+.projection-text {
+    font-size: 14px;
+    color: var(--text-white);
+    line-height: 1.6;
+}
+.projection-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 8px;
+}
+.projection-tag.risk-low { background: rgba(16,185,129,0.15); color: var(--green); }
+.projection-tag.risk-mid { background: rgba(245,158,11,0.15); color: var(--yellow); }
+.projection-tag.risk-high { background: rgba(239,68,68,0.15); color: var(--red); }
+
+/* =============================================
+   STAKEHOLDER NAVIGATION
+   ============================================= */
+.stakeholder-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.stakeholder-card {
+    padding: 16px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+.stakeholder-card:hover {
+    background: rgba(245,158,11,0.06);
+    border-color: rgba(245,158,11,0.3);
+}
+.stakeholder-card.completed {
+    opacity: 0.5;
+    pointer-events: none;
+    border-color: var(--green);
+}
+.sh-avatar { font-size: 28px; margin-bottom: 8px; }
+.sh-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-white);
+    margin-bottom: 2px;
+}
+.sh-role {
+    font-size: 11px;
+    color: var(--text-dim);
+}
+.negotiation-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+}
+.nego-avatar { font-size: 36px; }
+.negotiation-header h3 {
+    font-size: 16px;
+    color: var(--text-white);
+    font-weight: 600;
+}
+.negotiation-header p {
+    font-size: 12px;
+    color: var(--text-dim);
+}
+.nego-scenario {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+.nego-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.nego-choice {
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text);
+    font-size: 14px;
+    transition: all 0.2s;
+}
+.nego-choice:hover {
+    background: rgba(245,158,11,0.08);
+    border-color: rgba(245,158,11,0.4);
+    color: var(--text-white);
+}
+.nego-result {
+    text-align: center;
+    padding: 20px;
+}
+#nego-result-text {
+    font-size: 15px;
+    color: var(--text-white);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* =============================================
+   IMPACT DASHBOARD
+   ============================================= */
+.impact-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.impact-metric-card {
+    padding: 14px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+.im-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 6px;
+}
+.im-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-white);
+}
+.im-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+.im-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(0.1,0.7,0.1,1);
+}
+.impact-log h4 {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+#impact-log-list {
+    list-style: none;
+    max-height: 160px;
+    overflow-y: auto;
+}
+#impact-log-list li {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-left: 2px solid var(--border);
+    margin-bottom: 6px;
+    color: var(--text);
+    line-height: 1.4;
+}
+#impact-log-list li.log-empty {
+    color: var(--text-dim);
+    border-left-color: transparent;
+    font-style: italic;
+}
+#impact-log-list li.log-positive { border-left-color: var(--green); }
+#impact-log-list li.log-negative { border-left-color: var(--red); }
+
+/* =============================================
+   UTILITIES
+   ============================================= */
+.hidden { display: none !important; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+    .sim-grid {
+        grid-template-columns: 1fr;
+    }
+    .sim-topbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .sim-topbar-right {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

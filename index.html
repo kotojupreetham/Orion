@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion — The Decision Engine for Changemakers</title>
+    <meta name="description" content="Orion helps young changemakers simulate startup decisions, manage stakeholders, and build real-world social entrepreneurship skills.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Design System (4-layer) -->
+    <link rel="stylesheet" href="css/01-variables.css">
+    <link rel="stylesheet" href="css/02-base.css">
+    <link rel="stylesheet" href="css/03-layout.css">
+    <link rel="stylesheet" href="css/04-components.css">
+
+    <!-- App-specific overrides (evaluation grid, scorecard, etc.) -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- GSAP + ScrollTrigger -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+    <script>
+        // Sync theme before paint
+        (function() {
+            var t = localStorage.getItem('orion-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+</head>
+<body>
+
+    <!-- ═══════════════ LOADING SCREEN ═══════════════ -->
+    <div id="loading-screen" class="active">
+        <div class="loading-inner">
+            <div class="spinner"></div>
+            <p class="loading-text">Orion</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+    <div id="login-screen" class="hidden">
+        <div class="login-bg-grid"></div>
+        <div class="login-container">
+            <div class="login-logo">Orion<span> — The Decision Engine</span></div>
+            <h1>Built for Changemakers.</h1>
+            <p>Your simulation adapts to your real-world experience — not a generic curriculum.</p>
+            <button id="login-btn" class="google-btn magnetic" style="padding:16px 32px; font-size:1rem; border-radius:var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Sign in with Google
+            </button>
+            <button class="theme-toggle magnetic" id="login-theme-btn" title="Switch theme" style="position:absolute; top:20px; right:20px;">☽</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════ ONBOARDING MODAL ═══════════════ -->
+    <div id="onboarding-overlay" class="hidden">
+        <div class="onboarding-modal-inner">
+            <button id="close-onboarding-btn" class="close-onboarding-btn" title="Cancel">✕</button>
+            <iframe id="onboarding-iframe" src="" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <!-- ═══════════════ MAIN APP ═══════════════ -->
+    <div id="app-screen" class="hidden">
+
+        <!-- TOP TOOLBAR -->
+        <header class="toolbar">
+            <div class="toolbar-left">
+                <div class="app-logo">Orion<span> • Decision Engine</span></div>
+                <div class="toolbar-divider"></div>
+                <button id="new-workspace-btn" class="toolbar-btn primary-toolbar-btn magnetic">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    New Conversation
+                </button>
+            </div>
+            <div class="toolbar-center">
+                <span id="active-workspace-breadcrumb" class="breadcrumb-text">Select a workspace</span>
+            </div>
+            <div class="toolbar-right">
+                <button class="theme-toggle magnetic" id="theme-btn" title="Switch theme">☽</button>
+                <img id="toolbar-user-photo" src="" alt="" class="toolbar-avatar">
+                <span id="toolbar-level-badge" class="hidden"></span>
+                <button id="logout-btn" class="toolbar-icon-btn magnetic" title="Logout">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN BODY (sidebar + editor + right panel) -->
+        <div class="ide-body" id="ide-body">
+
+            <!-- LEFT SIDEBAR -->
+            <aside class="ide-sidebar glass" id="sidebar">
+                <div class="sidebar-tab-bar">
+                    <button class="sidebar-tab active" data-tab="explorer" title="Workspaces">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    </button>
+                    <button class="sidebar-tab" data-tab="search" title="Search">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </button>
+                </div>
+                <div class="sidebar-panel" id="panel-explorer">
+                    <p class="sidebar-panel-title">PROJECT EXPLORER</p>
+                    <div id="workspace-list"></div>
+                    <p id="no-workspace-msg" class="hidden sidebar-empty-msg">No workspaces yet.<br>Click "New Conversation" to start.</p>
+                </div>
+                <div class="sidebar-panel hidden" id="panel-search">
+                    <p class="sidebar-panel-title">SEARCH</p>
+                    <input type="text" class="search-input" placeholder="Search workspaces..." id="workspace-search">
+                </div>
+            </aside>
+
+            <!-- CENTER: Main Editor -->
+            <main class="ide-editor glass">
+                <!-- Empty State -->
+                <div id="empty-state" class="editor-empty active">
+                    <div class="empty-state-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.3"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <h3>No workspace selected</h3>
+                    <p>Select a workspace from the explorer, or start a new conversation.</p>
+                    <button class="btn btn-primary magnetic" id="empty-new-btn">+ New Conversation</button>
+                </div>
+
+                <!-- Workspace View -->
+                <div id="workspace-view" class="hidden">
+                    <div class="editor-tab-bar">
+                        <div class="editor-tab active" id="editor-active-tab">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span id="workspace-tab-title">workspace.nyx</span>
+                        </div>
+                    </div>
+                    <div class="editor-header">
+                        <div class="editor-header-left">
+                            <h2 id="workspace-title" contenteditable="true" spellcheck="false">Workspace Title</h2>
+                            <span id="workspace-level-pill" class="hidden"></span>
+                        </div>
+                        <div class="editor-header-right">
+                            <span class="editor-hint">Title auto-saves on blur</span>
+                        </div>
+                    </div>
+                    <div class="messages-container" id="messages-container"></div>
+                    <div class="input-area">
+                        <div class="input-wrapper">
+                            <textarea id="message-input" placeholder="Type your idea, note, or hypothesis..." rows="1"></textarea>
+                            <button id="send-btn" class="send-btn magnetic" title="Send (Enter)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                            </button>
+                        </div>
+                        <p class="input-hint">Press <kbd>Enter</kbd> to send, <kbd>Shift+Enter</kbd> for new line</p>
+                    </div>
+                </div>
+
+                <!-- Evaluation View -->
+                <div id="evaluation-view" class="hidden">
+                    <div class="eval-header">
+                        <h2>Viability Stress Test</h2>
+                        <p>Evaluate your startup for real-world survival.</p>
+                    </div>
+                    <div id="eval-grid" class="eval-grid hidden">
+                        <div class="eval-box" id="eval-box-vision">
+                            <h4 class="eval-box-title">Core Vision <span class="badge">Problem & Motivation</span></h4>
+                            <div class="eval-box-body" id="eval-q-vision"></div>
+                        </div>
+                        <div class="eval-box" id="eval-box-strategy">
+                            <h4 class="eval-box-title">Strategic Moat <span class="badge">Market & Users</span></h4>
+                            <div class="eval-box-body" id="eval-q-strategy"></div>
+                        </div>
+                        <div class="eval-box" id="eval-box-resources">
+                            <h4 class="eval-box-title">Resource Architecture <span class="badge">Budget & Tools</span></h4>
+                            <div class="eval-box-body" id="eval-q-resources"></div>
+                        </div>
+                        <div class="eval-box" id="eval-box-risks">
+                            <h4 class="eval-box-title">Operational Risk <span class="badge">Team & Sustainability</span></h4>
+                            <div class="eval-box-body" id="eval-q-risks"></div>
+                        </div>
+                    </div>
+                    <div id="eval-q-container" class="hidden"></div>
+                    <div id="eval-finalize-container" class="hidden" style="margin-top:32px;width:100%;display:flex;justify-content:center;">
+                        <button id="eval-finalize-btn" class="ob-btn primary" style="padding:16px 48px;">Analyze Startup Potential →</button>
+                    </div>
+                    <div id="eval-loading" class="hidden">
+                        <div class="eval-orb"></div>
+                        <p>Generating Startup Survival Scorecard...</p>
+                    </div>
+                    <div id="eval-scorecard" class="hidden"></div>
+                </div>
+            </main>
+
+            <!-- RIGHT PANEL -->
+            <aside class="ide-right-panel glass" id="right-panel">
+                <div class="right-panel-empty" id="right-panel-empty">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <p>Select a workspace to view details</p>
+                </div>
+                <div class="right-panel-content hidden" id="right-panel-content">
+                    <!-- Hidden internal refs used by app.js -->
+                    <span id="rp-level-icon" class="hidden"></span>
+                    <span id="rp-level-name" class="hidden"></span>
+                    <span id="rp-level-sub" class="hidden"></span>
+                    <span id="rp-score-fill" class="hidden"></span>
+                    <span id="rp-score-text" class="hidden"></span>
+
+                    <div class="right-panel-section">
+                        <p class="right-panel-label">WORKSPACE</p>
+                        <div class="detail-row" style="align-items:flex-start;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px;"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+                            <span id="rp-idea-text" class="rp-idea-text"></span>
+                        </div>
+                        <div class="eval-action-section">
+                            <button id="start-eval-btn" class="ob-btn primary full">Run Viability Test →</button>
+                        </div>
+                    </div>
+                    <div class="right-panel-section">
+                        <p class="right-panel-label">STATS</p>
+                        <div class="detail-row">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <span id="rp-created-at">—</span>
+                        </div>
+                        <div class="detail-row">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span id="rp-msg-count">0 notes</span>
+                        </div>
+                    </div>
+                    <div class="right-panel-section">
+                        <p class="right-panel-label">YOUR SIMULATION</p>
+                        <p class="rp-sim-desc" id="rp-sim-desc">Your workspace is calibrated to your profile. Start adding ideas and notes to begin.</p>
+                        <div class="eval-action-section">
+                            <button id="launch-sim-btn" class="btn btn-primary magnetic full" style="background:linear-gradient(135deg, var(--cyan), var(--purple)); border:none; padding:12px 20px; font-size:0.95rem;">🚀 Launch Simulation →</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- BOTTOM STATUS BAR -->
+        <footer class="status-bar">
+            <div class="status-left">
+                <span class="status-dot active-dot"></span>
+                <span id="status-user-name">—</span>
+                <span id="status-level" class="hidden"></span>
+            </div>
+            <div class="status-right">
+                <span class="status-item" id="status-workspace">No workspace open</span>
+                <span class="status-sep">·</span>
+                <span class="status-item" id="status-msg-count">0 notes</span>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
