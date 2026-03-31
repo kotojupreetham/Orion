@@ -1127,11 +1127,11 @@ p {
     border: none;
     outline: none;
     color: var(--text);
-    font-size: 14px;
+    font-size: 16px;
     font-family: 'Inter', sans-serif;
     resize: none;
     max-height: 120px;
-    line-height: 1.55;
+    line-height: 1.6;
 }
 #message-input::placeholder { color: var(--text-muted); }
 
