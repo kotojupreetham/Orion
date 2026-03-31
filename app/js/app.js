@@ -646,9 +646,18 @@ async function callGemini(userMessage, wsId) {
     const ws   = appState.workspaces.find((w) => w.id === wsId);
     const idea = ws?.idea || "a social startup";
 
+    // Build conversation history (last 5 exchanges for context)
+    const messages = appState.messages.slice(-10); // last 10 messages
+    const history = messages.map(m => `${m.role === 'user' ? 'User' : 'AI'}: ${m.text}`).join('\n');
+
     const systemPrompt = `You are OrionAI — the intelligent co-pilot for social entrepreneurs.
+This conversation is specific to this workspace only. Do not reference or recall information from other workspaces, ideas, or previous interactions outside this one.
+
 The user is developing this startup idea: "${idea}".
 Their level: ${appState.userLevel}.
+
+Recent conversation history:
+${history}
 
 Your job is to provide structured idea reviews focusing on:
 - Problem clarity: Is the problem well-defined and significant?
