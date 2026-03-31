@@ -731,14 +731,15 @@ Guidelines:
         const baseIdea = ws?.idea || "your workspace idea";
 
         if (/what problem.*solve/i.test(userMessage) || /what.*does.*solve/i.test(userMessage)) {
-            return `Your idea solves the community plastic-waste gap by giving volunteers a structure to collect, reward, and scale local neighborhood cleanup activity. It turns good intention into operational momentum and early evidence of impact.`;
+            const problem = baseIdea.split('.')[0] || "a social challenge";
+            return `Your idea addresses ${problem.toLowerCase()}, aiming to create positive impact. What makes this problem important to solve right now?`;
         }
 
         if (baseIdea && userMessage.length < 100) {
-            return `Based on your idea (${baseIdea}), you are helping people reduce local plastic pollution, create meaningful volunteer teams, and build early momentum toward larger systemic change.`;
+            return `Based on your idea (${baseIdea}), it seems you're working on a social initiative. Can you share more about your target users or the solution you're proposing?`;
         }
 
-        return "Sorry, AI service is currently unavailable. I summarized your core problem in the app while you get back up to speed.";
+        return "Sorry, AI service is currently unavailable. Please try again later or provide more details about your idea.";
     }
 }
 
