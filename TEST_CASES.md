@@ -389,30 +389,7 @@ I provide the playbook and margin-sharing model. This scales 100x while I scale 
 **Total Scores**: Learner: 6 | Builder: 2 | Explorer: 3 | Catalyst: 0
 **Classification**: **LEARNER** 📖
 
-**Workspace Entry** — What the user types:
-```
-"Before I spend a single rupee on plastic waste initiatives, I need to understand 
-the problem deeply.
-
-Key research questions:
-1. What percentage of plastic waste actually comes from consumer behavior vs. 
-   industrial packaging?
-2. Have municipal collection efforts been tried before in this city? What failed?
-3. What does current policy say about waste management responsibilities?
-4. What do peer-reviewed studies say about incentive structures for waste collection?
-
-I'm going to spend the first ₹10-15k on research: Literature review, interviews 
-with 20 waste workers, 20 citizens, and 5 municipal officials. This will take 
-6-8 weeks.
-
-Only after I have robust causal clarity will I design an intervention. Without 
-understanding root causes, I'm just guessing."
-```
-
-**Workspace UI for Beginner Learner:**
-- 📚 Research roadmap: Literature review, interview templates, causal map templates
-- 🔬 Study design: Sample size calculator, bias mitigation strategies
-- 📝 Right panel: Research gaps, framework recommendations, causal hierarchy
+---
 
 ### Sublevel 2: Intermediate
 **Profile**: Research-informed, starting to see tradeoffs, applying frameworks intelligently.
@@ -432,32 +409,7 @@ understanding root causes, I'm just guessing."
 **Total Scores**: Learner: 5 | Catalyst: 6 | Builder: 2 | Explorer: 1
 **Classification**: **CATALYST** 🚀 (research + pragmatism = systems thinking)
 
-**Workspace Entry** — What the user types:
-```
-"I've done enough research to know: The problem isn't lack of awareness—it's 
-misaligned incentives between waste workers, waste buyers, and citizens.
-
-My hypothesis: 
-If waste workers can earn ₹2/kg for sorted plastic, collection behavior will change. 
-If recyclers can source clean feedstock at ₹3.50/kg, they'll fund the difference.
-
-Testing strategy with ₹50k:
-1. Literature review + framework building (₹5k, 2 weeks): Map all actors, incentive structures, 
-   feedback loops
-2. Field research (₹10k, 4 weeks): Validate willingness-to-pay with 5-10 waste workers 
-   and 2-3 recyclers
-3. Pilot test (₹25k, 6 weeks): Run the model in 1 neighborhood, measure collection 
-   rates, earnings, cost
-4. Analysis + documentation (₹10k, 2 weeks): Write up findings, create replication toolkit
-
-Success metric: Does empirical data match my hypothesis? If yes, I have a scalable model."
-```
-
-**Workspace UI for Intermediate Catalyst:**
-- 📊 Research+action hybrid: Causal framework + data validation
-- 🧪 Program-theory model: Assumptions, indicators, validation tests
-- 📈 Pilot monitoring: Real-time data collection, hypothesis tracking
-- 💡 Right panel: Causal insights emerging from data, framework updates
+---
 
 ### Sublevel 3: Pro
 **Profile**: Research-driven strategist, applies rigorous frameworks, sees connections across domains.

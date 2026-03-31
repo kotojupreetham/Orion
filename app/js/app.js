@@ -279,8 +279,14 @@ async function createWorkspace() {
     );
     if (!ideaRaw?.trim()) return;
 
-    const idea  = ideaRaw.trim();
-    const title = await aiSuggestWorkspaceTitle(idea);
+    const idea = ideaRaw.trim();
+    let title = await aiSuggestWorkspaceTitle(idea);
+
+    // Enforce deterministic short title in all cases, max 28 chars
+    if (!title) title = idea;
+    title = title.trim().split(/\r?\n/)[0];
+    title = title.replace(/^\"|\"$/g, "").trim();
+    if (title.length > 28) title = title.substring(0, 28).trim() + "…";
 
     try {
         const ref = await addDoc(
