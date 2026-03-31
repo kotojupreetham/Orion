@@ -1172,6 +1172,13 @@ p {
     color: var(--text-secondary);
 }
 
+/* ── Workspace View Layout ───────────────────────────────────── */
+#workspace-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
 /* ══════════════════════════════════════════════════════════════
    16. RIGHT PANEL
    ══════════════════════════════════════════════════════════════ */
