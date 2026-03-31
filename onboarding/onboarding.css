@@ -1,0 +1,839 @@
+/* ═══════════════════════════════════════════════════════════════
+   ORION — Onboarding / Assessment Stylesheet
+   Aesthetic:  Cinematic Minimalism · Typeform-inspired
+   One question on screen at a time — full-bleed, centred stage.
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+/* ══════════════════════════════════════════════════════════════
+   1. DESIGN TOKENS — DARK (default)
+   ══════════════════════════════════════════════════════════════ */
+:root,
+[data-theme="dark"] {
+    --bg:              #090910;
+    --bg-alt:          #0f0f18;
+    --surface:         rgba(18, 18, 30, 0.82);
+    --surface-hover:   rgba(255, 255, 255, 0.05);
+
+    --accent:          #4f8ef7;
+    --accent-dim:      rgba(79, 142, 247, 0.14);
+    --accent-glow:     rgba(79, 142, 247, 0.22);
+
+    --text:            #f0f0f5;
+    --text-muted:      #5a5a72;
+    --text-secondary:  #9090a8;
+
+    --border:          rgba(255, 255, 255, 0.08);
+    --border-strong:   rgba(255, 255, 255, 0.13);
+    --border-accent:   rgba(79, 142, 247, 0.38);
+
+    --input-bg:        rgba(255, 255, 255, 0.04);
+
+    /* Level colours */
+    --explorer:  #4ade80;
+    --learner:   #f59e0b;
+    --builder:   #fb923c;
+    --catalyst:  #818cf8;
+
+    --radius-sm:  8px;
+    --radius-md:  14px;
+    --radius-lg:  20px;
+    --radius-xl:  28px;
+    --radius-full: 9999px;
+
+    --ease-expo-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-expo-in:     cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-back-out:    cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   2. DESIGN TOKENS — LIGHT
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+    --bg:              #f8f8fc;
+    --bg-alt:          #ededf5;
+    --surface:         rgba(255, 255, 255, 0.88);
+    --surface-hover:   rgba(0, 0, 0, 0.04);
+
+    --accent:          #4338ca;
+    --accent-dim:      rgba(67, 56, 202, 0.10);
+    --accent-glow:     rgba(67, 56, 202, 0.15);
+
+    --text:            #111118;
+    --text-muted:      #9090a8;
+    --text-secondary:  #5a5a72;
+
+    --border:          rgba(0, 0, 0, 0.08);
+    --border-strong:   rgba(0, 0, 0, 0.13);
+    --border-accent:   rgba(67, 56, 202, 0.32);
+
+    --input-bg:        rgba(0, 0, 0, 0.03);
+
+    --explorer:  #16a34a;
+    --learner:   #d97706;
+    --builder:   #ea580c;
+    --catalyst:  #4338ca;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   3. GLOBAL RESET & BASE
+   ══════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    will-change: transform, opacity;
+}
+
+input, textarea, select {
+    font-family: inherit;
+    will-change: transform, opacity;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Hide scrollbars */
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   4. HAIRLINE PROGRESS BAR
+   ══════════════════════════════════════════════════════════════ */
+.ob-progress-track {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 1.5px;
+    background: var(--border);
+    z-index: 200;
+    overflow: hidden;
+}
+.ob-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, white));
+    width: 0%;
+    border-radius: 0 var(--radius-full) var(--radius-full) 0;
+    /* GSAP drives width — no CSS transition */
+}
+
+/* ══════════════════════════════════════════════════════════════
+   5. HEADER / TOP CHROME
+   ══════════════════════════════════════════════════════════════ */
+.ob-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    z-index: 100;
+    /* subtle glass */
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+}
+
+.ob-logo {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--accent);
+}
+.ob-logo span {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0;
+}
+
+.ob-header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.ob-step-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.ob-theme-btn {
+    width: 30px; height: 30px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-hover);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    will-change: transform;
+}
+.ob-theme-btn:hover { background: var(--accent-dim); color: var(--accent); border-color: var(--border-accent); }
+
+/* ══════════════════════════════════════════════════════════════
+   6. FULL-SCREEN STAGE
+   ══════════════════════════════════════════════════════════════ */
+.ob-stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    /* padding-top ensures content clears the fixed header */
+    padding-top: 56px;
+}
+
+/* ── Each screen fills the stage and centers its content ── */
+.ob-screen {
+    position: absolute;
+    inset: 0;
+    padding-top: 56px;         /* clear header */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    will-change: transform, opacity;
+}
+.ob-screen.hidden { display: none; pointer-events: none; }
+
+.ob-screen-inner {
+    display: flex;
+    flex-direction: column;
+    width: min(580px, 90vw);
+    padding: 48px 0 80px;      /* bottom clears keyboard hint */
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+.ob-screen-inner::-webkit-scrollbar { display: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   7. TYPOGRAPHY — SURVEY SCALE
+   ══════════════════════════════════════════════════════════════ */
+.ob-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+}
+
+.ob-big-title {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 24px;
+}
+.ob-big-title em {
+    font-style: normal;
+    color: var(--accent);
+}
+
+.ob-question-title {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 16px;
+}
+
+.ob-body-text {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 36px;
+}
+
+/* ── Question meta row ── */
+.ob-q-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.ob-q-step {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+.ob-branch-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: var(--accent-dim);
+    color: var(--accent);
+    letter-spacing: 0.06em;
+}
+.ob-branch-tag.hidden { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   8. OPTION CARDS — large minimalist rectangles
+   ══════════════════════════════════════════════════════════════ */
+.ob-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.option-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--input-bg);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--text);
+    transition: border-color 0.18s, background 0.18s;
+    will-change: transform, opacity;
+    /* No CSS transform transition — GSAP does that */
+}
+.option-card:hover {
+    border-color: var(--border-accent);
+    background: var(--accent-dim);
+}
+.option-card.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+}
+.option-card.selected .opt-key {
+    background: var(--accent);
+    color: #fff;
+    border-color: transparent;
+}
+
+.opt-key {
+    width: 26px; height: 26px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-strong);
+    background: var(--surface-hover);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.opt-text { flex: 1; }
+
+/* ══════════════════════════════════════════════════════════════
+   9. MULTI-SELECT CHIPS
+   ══════════════════════════════════════════════════════════════ */
+.ob-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+.chip-item {
+    padding: 11px 20px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-full);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: border-color 0.18s, background 0.18s, color 0.18s;
+    user-select: none;
+    will-change: transform;
+}
+.chip-item:hover { border-color: var(--border-accent); color: var(--text); background: var(--accent-dim); }
+.chip-item.selected {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+}
+.chip-item.exclusive.selected {
+    background: rgba(74, 222, 128, 0.12);
+    border-color: var(--explorer);
+    color: var(--explorer);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   10. RANKING LIST
+   ══════════════════════════════════════════════════════════════ */
+.ob-ranking {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+}
+.ranking-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+}
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--input-bg);
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text);
+    transition: border-color 0.18s, background 0.18s;
+    will-change: transform;
+}
+.ranking-item:hover { border-color: var(--border-accent); background: var(--accent-dim); }
+.ranking-item.ranked { border-color: var(--accent); background: var(--accent-dim); }
+.ranking-item.ranked .rank-num {
+    background: var(--accent);
+    border-color: transparent;
+    color: #fff;
+}
+.rank-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-hover);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   11. TEXT INPUT / TEXTAREA
+   ══════════════════════════════════════════════════════════════ */
+.ob-input-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 32px;
+}
+.ob-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.ob-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.ob-field-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.ob-text-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--input-bg);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    will-change: transform;
+}
+.ob-text-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.ob-text-input::placeholder { color: var(--text-muted); }
+
+.ob-select {
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235a5a72' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+}
+
+.ob-textarea-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+}
+.ob-textarea {
+    width: 100%;
+    padding: 16px 18px;
+    background: var(--input-bg);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+    resize: none;
+    outline: none;
+    min-height: 130px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    will-change: transform;
+}
+.ob-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.ob-textarea::placeholder { color: var(--text-muted); }
+.ob-char-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   12. BUTTONS
+   ══════════════════════════════════════════════════════════════ */
+.ob-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    padding: 14px 28px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    will-change: transform, opacity;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.ob-cta-btn:hover {
+    background: color-mix(in srgb, var(--accent) 85%, white);
+    box-shadow: 0 4px 20px var(--accent-glow);
+}
+.ob-cta-btn.disabled {
+    background: var(--surface-hover);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.55;
+}
+.ob-cta-btn.full { width: 100%; }
+
+.ob-ghost-btn {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    will-change: transform;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.ob-ghost-btn:hover { color: var(--text); border-color: var(--border-strong); background: var(--surface-hover); }
+
+/* ── Nav row ── */
+.ob-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 24px;
+    gap: 12px;
+}
+
+/* ── Action row (welcome / result) ── */
+.ob-action-row { margin-bottom: 32px; }
+
+/* ══════════════════════════════════════════════════════════════
+   13. LEVEL CHIPS (welcome screen)
+   ══════════════════════════════════════════════════════════════ */
+.ob-level-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.ob-chip {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    border: 1px solid;
+    letter-spacing: 0.03em;
+}
+.ob-chip.explorer { background: rgba(74,222,128,0.10); border-color: rgba(74,222,128,0.28); color: var(--explorer); }
+.ob-chip.learner  { background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.28); color: var(--learner); }
+.ob-chip.builder  { background: rgba(251,146,60,0.10); border-color: rgba(251,146,60,0.28); color: var(--builder); }
+.ob-chip.catalyst { background: rgba(129,140,248,0.10);border-color: rgba(129,140,248,0.28);color: var(--catalyst); }
+
+/* ══════════════════════════════════════════════════════════════
+   14. AI LOADING SCREEN
+   ══════════════════════════════════════════════════════════════ */
+.ob-loading-screen .ob-screen-inner {
+    align-items: center;
+    text-align: center;
+    gap: 0;
+}
+.ob-orb {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--accent) 80%, white), var(--accent));
+    margin-bottom: 32px;
+    box-shadow: 0 0 40px var(--accent-glow);
+    animation: orbFloat 3s ease-in-out infinite, orbGlow 2.2s ease-in-out infinite alternate;
+}
+@keyframes orbFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-14px); }
+}
+@keyframes orbGlow {
+    from { box-shadow: 0 0 20px var(--accent-glow); }
+    to   { box-shadow: 0 0 60px var(--accent-glow), 0 0 100px color-mix(in srgb, var(--accent) 40%, transparent); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   15. RESULT SCREEN — Typographic Level Reveal
+   ══════════════════════════════════════════════════════════════ */
+.ob-result-screen .ob-screen-inner {
+    align-items: center;
+    text-align: center;
+}
+
+.ob-result-icon {
+    font-size: 56px;
+    margin-bottom: 14px;
+    will-change: transform, opacity;
+    /* GSAP spring — no CSS animation */
+}
+
+/* THE hero level name — GSAP scales this from 0.8 → 1.0 */
+.ob-result-level {
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 10px;
+    will-change: transform, opacity;
+    /* Colour set at runtime via JS class */
+}
+.ob-result-level.explorer { color: var(--explorer); }
+.ob-result-level.learner  { color: var(--learner);  }
+.ob-result-level.builder  { color: var(--builder);  }
+.ob-result-level.catalyst { color: var(--catalyst); }
+
+.ob-result-tagline {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+    will-change: opacity;
+}
+
+/* ── Score bars ── */
+.ob-score-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+    width: 100%;
+    max-width: 400px;
+}
+.score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.score-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    width: 68px;
+    flex-shrink: 0;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    text-align: left;
+}
+.score-label.active { color: var(--text); }
+.score-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+.score-bar {
+    height: 100%;
+    border-radius: var(--radius-full);
+    width: 0%;
+    /* GSAP drives width */
+}
+.score-bar.explorer { background: var(--explorer); }
+.score-bar.learner  { background: var(--learner);  }
+.score-bar.builder  { background: var(--builder);  }
+.score-bar.catalyst { background: var(--catalyst); }
+.score-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    min-width: 30px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* ── Result desc card ── */
+.ob-result-desc {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    width: 100%;
+    text-align: left;
+    will-change: opacity;
+}
+[data-theme="light"] .ob-result-desc { background: rgba(0,0,0,0.03); }
+
+/* ── Reasoning card ── */
+.ob-result-reasoning {
+    background: var(--accent-dim);
+    border: 1px dashed var(--border-accent);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    width: 100%;
+    text-align: left;
+    will-change: opacity;
+}
+.ob-result-reasoning h3 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+}
+.ob-result-reasoning ul {
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.ob-result-reasoning li {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+.ob-result-reasoning.hidden { display: none !important; }
+
+/* ── Path info ── */
+.ob-path-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+}
+.ob-path-label { font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+.ob-path-info.hidden { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   16. KEYBOARD HINT (bottom of page)
+   ══════════════════════════════════════════════════════════════ */
+.ob-keyboard-hint {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    padding: 7px 16px;
+    backdrop-filter: blur(12px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    z-index: 50;
+}
+.ob-keyboard-hint.visible { opacity: 1; }
+.ob-keyboard-hint kbd {
+    background: var(--border-strong);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: inherit;
+    font-size: 11px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   17. UTILITIES
+   ══════════════════════════════════════════════════════════════ */
+.hidden { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   18. RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+    .ob-header { padding: 0 18px; }
+    .ob-screen-inner { padding: 32px 0 70px; }
+    .ob-big-title { font-size: 2.4rem; }
+    .ob-question-title { font-size: 1.6rem; }
+    .ob-result-level { font-size: 3.5rem; }
+    .ob-field-row { grid-template-columns: 1fr; }
+    .option-card { padding: 15px 16px; font-size: 14px; }
+}

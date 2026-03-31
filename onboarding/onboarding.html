@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion — Profile Setup</title>
+    <meta name="description" content="Complete your Orion profile to personalise your decision-simulation experience.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="onboarding.css">
+
+    <!-- GSAP -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+    <!-- Theme flash prevention -->
+    <script>
+        (function () {
+            // Inherit theme from parent if loaded inside an iframe
+            try {
+                var pt = window.parent.document.documentElement.getAttribute('data-theme');
+                if (pt) document.documentElement.setAttribute('data-theme', pt);
+            } catch(e) {
+                var t = localStorage.getItem('orion-theme') || 'dark';
+                document.documentElement.setAttribute('data-theme', t);
+            }
+        })();
+    </script>
+</head>
+<body>
+
+    <!-- ── Hairline progress bar ── -->
+    <div class="ob-progress-track" aria-hidden="true">
+        <div class="ob-progress-fill" id="ob-progress"></div>
+    </div>
+
+    <!-- ── Top chrome ── -->
+    <header class="ob-header">
+        <div class="ob-logo">Orion<span></span></div>
+        <div class="ob-header-right">
+            <span class="ob-step-label" id="ob-step-label" aria-live="polite"></span>
+            <button class="ob-theme-btn" id="ob-theme-btn" title="Toggle theme" aria-label="Toggle light/dark theme">
+                <span id="ob-theme-icon">☽</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ── Full-screen question stage ── -->
+    <main class="ob-stage" id="ob-stage" role="main">
+
+        <!-- Each .ob-screen is one "slide". JS positions them absolutely and transitions. -->
+
+        <!-- SCREEN 0: Welcome ──────────────────────────── -->
+        <section class="ob-screen" id="screen-welcome" data-screen="welcome" aria-label="Welcome">
+            <div class="ob-screen-inner">
+                <p class="ob-eyebrow">Profile Setup · ~90 seconds</p>
+                <h1 class="ob-big-title">
+                    Built for<br>
+                    <em>Changemakers.</em>
+                </h1>
+                <p class="ob-body-text">
+                    A few quick, scenario-based questions help Orion personalise your entire simulation experience.
+                    No right or wrong answers.
+                </p>
+                <div class="ob-action-row">
+                    <button class="ob-cta-btn" id="start-btn" aria-label="Begin assessment">
+                        Begin
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                </div>
+                <div class="ob-level-chips" aria-label="Available levels">
+                    <span class="ob-chip explorer">Explorer</span>
+                    <span class="ob-chip learner">Learner</span>
+                    <span class="ob-chip builder">Builder</span>
+                    <span class="ob-chip catalyst">Catalyst</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 1: Profile Info ──────────────────────── -->
+        <section class="ob-screen hidden" id="screen-profile" data-screen="profile" aria-label="Tell us about yourself">
+            <div class="ob-screen-inner">
+                <p class="ob-eyebrow">Step 1 of 3</p>
+                <h2 class="ob-question-title">Tell us about yourself.</h2>
+                <p class="ob-body-text">This helps us contextualise your simulation scenarios.</p>
+
+                <div class="ob-input-stack">
+                    <div class="ob-field">
+                        <label class="ob-field-label" for="prof-name">Full Name</label>
+                        <input type="text" id="prof-name" class="ob-text-input" placeholder="e.g. Priya Sharma" autocomplete="name">
+                    </div>
+                    <div class="ob-field-row">
+                        <div class="ob-field">
+                            <label class="ob-field-label" for="prof-age">Age</label>
+                            <input type="number" id="prof-age" class="ob-text-input" placeholder="18" min="13" max="120">
+                        </div>
+                        <div class="ob-field">
+                            <label class="ob-field-label" for="prof-gender">Gender</label>
+                            <select id="prof-gender" class="ob-text-input ob-select">
+                                <option value="" disabled selected>Select…</option>
+                                <option value="female">Female</option>
+                                <option value="male">Male</option>
+                                <option value="nonbinary">Non-binary</option>
+                                <option value="prefer_not_to_say">Prefer not to say</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ob-nav">
+                    <button class="ob-ghost-btn" id="back-profile-btn" aria-label="Go back">← Back</button>
+                    <button class="ob-cta-btn disabled" id="submit-profile-btn" aria-label="Save and continue" disabled>Save &amp; Continue →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: Core Idea ─────────────────────────── -->
+        <section class="ob-screen hidden" id="screen-idea" data-screen="idea" aria-label="Your core idea">
+            <div class="ob-screen-inner">
+                <p class="ob-eyebrow">Step 2 of 3</p>
+                <h2 class="ob-question-title">What's the problem<br>you want to solve?</h2>
+                <p class="ob-body-text">In 1–2 sentences. The raw idea is enough — don't overthink it.</p>
+
+                <div class="ob-textarea-wrap">
+                    <textarea id="idea-input"
+                              class="ob-textarea"
+                              rows="4"
+                              placeholder="e.g. A platform to reduce food waste by connecting restaurants to local NGOs…"
+                              aria-label="Describe your idea"></textarea>
+                    <span class="ob-char-hint" id="idea-char-hint">20 characters minimum</span>
+                </div>
+
+                <div class="ob-nav">
+                    <button class="ob-ghost-btn" id="back-idea-btn" aria-label="Go back">← Back</button>
+                    <button class="ob-cta-btn disabled" id="submit-idea-btn" aria-label="Continue" disabled>Continue →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: AI Loading ────────────────────────── -->
+        <section class="ob-screen hidden ob-loading-screen" id="screen-loading" data-screen="loading" aria-label="Generating assessment" aria-busy="true">
+            <div class="ob-screen-inner" style="align-items:center; text-align:center;">
+                <div class="ob-orb" aria-hidden="true"></div>
+                <h2 class="ob-question-title" style="font-size:1.4rem;">Personalising your assessment…</h2>
+                <p class="ob-body-text">Analysing idea complexity &amp; stakeholder landscape</p>
+            </div>
+        </section>
+
+        <!-- SCREEN Q: Dynamic Question ──────────────────── -->
+        <section class="ob-screen hidden" id="screen-question" data-screen="question" aria-label="Assessment question" aria-live="polite">
+            <div class="ob-screen-inner">
+                <!-- Step label rendered by JS in #ob-step-label, mirrored here for screen height calc -->
+                <div class="ob-q-meta">
+                    <span class="ob-q-step" id="q-step" aria-live="polite"></span>
+                    <span class="ob-branch-tag hidden" id="q-branch-tag"></span>
+                </div>
+
+                <h2 class="ob-question-title" id="q-title">Question</h2>
+                <p class="ob-body-text" id="q-text"></p>
+
+                <!-- MCQ options — built by JS -->
+                <div class="ob-options" id="q-options" role="listbox" aria-label="Options"></div>
+
+                <!-- Multi-select chips -->
+                <div class="ob-chips" id="q-chips" role="group" aria-label="Select all that apply"></div>
+
+                <!-- Ranking list -->
+                <div class="ob-ranking" id="q-ranking" aria-label="Rank by dragging or clicking"></div>
+
+                <!-- Free-text area -->
+                <div class="ob-textarea-wrap hidden" id="q-text-area">
+                    <textarea id="q-textarea"
+                              class="ob-textarea"
+                              rows="4"
+                              aria-label="Your answer"></textarea>
+                    <span class="ob-char-hint">Write at least 20 characters to continue</span>
+                </div>
+
+                <div class="ob-nav">
+                    <button class="ob-ghost-btn" id="back-btn" aria-label="Previous question">← Back</button>
+                    <button class="ob-cta-btn disabled" id="next-btn" aria-label="Next question" disabled>Continue →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN R: Result ────────────────────────────── -->
+        <section class="ob-screen hidden ob-result-screen" id="screen-result" data-screen="result" aria-label="Your result" aria-live="polite">
+            <div class="ob-screen-inner" style="align-items:center; text-align:center;">
+                <p class="ob-eyebrow" id="result-eyebrow">Your Orion Profile</p>
+
+                <!-- Large typographic level reveal — GSAP targets this -->
+                <div class="ob-result-icon" id="result-icon" aria-hidden="true">🌱</div>
+                <div class="ob-result-level" id="result-level">Explorer</div>
+                <div class="ob-result-tagline" id="result-tagline">Starting Point</div>
+
+                <!-- Score bars -->
+                <div class="ob-score-bars" id="score-bars" role="list"></div>
+
+                <!-- Description card -->
+                <div class="ob-result-desc" id="result-desc"></div>
+
+                <!-- Reasoning card (hidden until populated) -->
+                <div class="ob-result-reasoning hidden" id="result-explanation">
+                    <h3>Why you are <span id="explain-level-name">an Explorer</span>:</h3>
+                    <ul id="explain-points"></ul>
+                </div>
+
+                <!-- Path info -->
+                <div class="ob-path-info hidden" id="result-path">
+                    <span class="ob-path-label">Your path:</span>
+                    <span id="path-text">—</span>
+                </div>
+
+                <button class="ob-cta-btn full" id="enter-btn" style="margin-top:28px;" aria-label="Enter your workspace">
+                    Enter Workspace →
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Keyboard hint -->
+    <div class="ob-keyboard-hint" id="ob-kbd-hint" aria-hidden="true">
+        Press <kbd>Enter</kbd> to continue
+    </div>
+
+    <script type="module" src="onboarding.js"></script>
+</body>
+</html>

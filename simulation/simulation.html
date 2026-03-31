@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion — Simulation Engine</title>
+    <meta name="description" content="Orion mission-control simulation: make real-time decisions and track their impact on budget, morale, and community trust.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="simulation.css">
+
+    <!-- GSAP -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+    <!-- Theme flash prevention -->
+    <script>
+        (function(){
+            try {
+                var t = window.parent.document.documentElement.getAttribute('data-theme');
+                if (t) document.documentElement.setAttribute('data-theme', t);
+            } catch(_) {
+                var s = localStorage.getItem('orion-theme') || 'dark';
+                document.documentElement.setAttribute('data-theme', s);
+            }
+        })();
+    </script>
+</head>
+<body>
+
+    <!-- ── TOP METRICS BAR ── -->
+    <header class="sim-topbar" role="banner">
+        <div class="sim-topbar-left">
+            <span class="sim-logo">Orion</span>
+            <span class="sim-logo-sub">Simulation</span>
+            <span class="sim-divider" aria-hidden="true"></span>
+            <span class="sim-idea-label" id="sim-idea-label">Loading workspace…</span>
+        </div>
+
+        <div class="sim-topbar-right" role="region" aria-label="Live metrics">
+            <!-- Budget -->
+            <div class="metric-pill" id="mp-budget" title="Remaining budget">
+                <span class="mp-icon" aria-hidden="true">💰</span>
+                <span class="mp-label">Budget</span>
+                <span class="mp-value" id="mv-budget" aria-live="polite">₹5.0L</span>
+            </div>
+            <!-- Morale -->
+            <div class="metric-pill" id="mp-morale" title="Team morale">
+                <span class="mp-icon" aria-hidden="true">🧠</span>
+                <span class="mp-label">Morale</span>
+                <span class="mp-value" id="mv-morale" aria-live="polite">80%</span>
+            </div>
+            <!-- Trust -->
+            <div class="metric-pill" id="mp-trust" title="Community trust">
+                <span class="mp-icon" aria-hidden="true">🤝</span>
+                <span class="mp-label">Trust</span>
+                <span class="mp-value" id="mv-trust" aria-live="polite">70%</span>
+            </div>
+            <!-- Timeline -->
+            <div class="metric-pill" id="mp-timeline" title="Project timeline">
+                <span class="mp-icon" aria-hidden="true">⏱</span>
+                <span class="mp-label">Timeline</span>
+                <span class="mp-value" id="mv-timeline" aria-live="polite">On Track</span>
+            </div>
+
+            <button class="back-btn" id="back-to-dash" title="Back to Dashboard" aria-label="Back to Dashboard">✕</button>
+        </div>
+    </header>
+
+    <!-- ── MAIN SHELL ── -->
+    <div class="sim-shell">
+
+        <!-- ─────────────── CENTER: Decision Stage ─────────────── -->
+        <main class="sim-center" role="main">
+
+            <!-- Tab bar -->
+            <nav class="sim-tab-bar" role="tablist" aria-label="Simulation modules">
+                <button class="sim-tab active" id="tab-decision"     role="tab" aria-selected="true"  aria-controls="panel-decision">🎯 Decisions</button>
+                <button class="sim-tab"         id="tab-resource"     role="tab" aria-selected="false" aria-controls="panel-resource">💰 Resources</button>
+                <button class="sim-tab"         id="tab-stakeholder"  role="tab" aria-selected="false" aria-controls="panel-stakeholder">🤝 Stakeholders</button>
+            </nav>
+
+            <!-- Tab panels -->
+            <div class="sim-tab-panels">
+
+                <!-- ── PANEL: Decision Simulator ── -->
+                <div class="sim-panel active" id="panel-decision" role="tabpanel" aria-labelledby="tab-decision">
+
+                    <div class="decision-badge" id="decision-badge" aria-live="polite">
+                        SCENARIO 0 / 5
+                    </div>
+
+                    <!-- Empty / start state -->
+                    <div class="sim-empty-state" id="decision-empty">
+                        <p>Real-world crises.<br>Real consequences.</p>
+                        <p class="sub">Five high-stakes operational scenarios calibrated to your idea and level.</p>
+                        <button class="sim-btn" id="start-decision" aria-label="Begin simulation">
+                            Begin Simulation
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Active scenario — populated by JS -->
+                    <div class="scenario-wrapper hidden" id="decision-active" aria-live="polite">
+                        <p class="scenario-context" id="decision-context"></p>
+                        <h2 class="scenario-question" id="decision-question"></h2>
+                        <div class="scenario-choices" id="decision-choices" role="listbox" aria-label="Choose an action"></div>
+                    </div>
+
+                    <!-- Outcome card — populated by JS -->
+                    <div class="scenario-outcome hidden" id="decision-outcome" aria-live="polite">
+                        <div class="outcome-header">
+                            <span class="outcome-icon" id="outcome-icon" aria-hidden="true"></span>
+                            <span class="outcome-verdict" id="outcome-verdict"></span>
+                        </div>
+                        <p class="outcome-text" id="outcome-text"></p>
+                        <div class="outcome-effects" id="outcome-effects" aria-label="Metric changes"></div>
+                        <button class="sim-btn sm" id="decision-next" aria-label="Next scenario">Next Scenario →</button>
+                    </div>
+                </div>
+
+                <!-- ── PANEL: Resource Allocation ── -->
+                <div class="sim-panel" id="panel-resource" role="tabpanel" aria-labelledby="tab-resource">
+                    <p class="panel-title">Resource Allocation · ₹5L Budget</p>
+                    <p class="resource-instructions">
+                        Distribute your budget across key operational areas.
+                        The simulator predicts outcomes based on your allocation strategy.
+                    </p>
+                    <div class="slider-group" id="slider-group" aria-label="Budget sliders"></div>
+                    <div class="resource-projection" id="resource-projection" aria-live="polite"></div>
+                </div>
+
+                <!-- ── PANEL: Stakeholder Navigation ── -->
+                <div class="sim-panel" id="panel-stakeholder" role="tabpanel" aria-labelledby="tab-stakeholder">
+                    <p class="panel-title">Stakeholder Navigation · <span id="stakeholder-badge">4 Meetings</span></p>
+
+                    <!-- Grid of stakeholder cards -->
+                    <div class="stakeholder-grid" id="stakeholder-cards" role="list" aria-label="Stakeholders"></div>
+
+                    <!-- Active negotiation view -->
+                    <div class="negotiation-view hidden" id="negotiation-active" aria-live="polite">
+                        <div class="negotiation-header">
+                            <span class="nego-avatar" id="nego-avatar" aria-hidden="true"></span>
+                            <div>
+                                <div class="nego-name" id="nego-name"></div>
+                                <div class="nego-role" id="nego-role"></div>
+                            </div>
+                        </div>
+                        <p class="nego-scenario" id="nego-scenario"></p>
+                        <div class="nego-choices" id="nego-choices" role="listbox" aria-label="Negotiation choices"></div>
+                    </div>
+
+                    <!-- Negotiation result -->
+                    <div class="nego-result-view hidden" id="nego-result" aria-live="polite">
+                        <p class="nego-result-text" id="nego-result-text"></p>
+                        <button class="sim-btn ghost sm" id="nego-back" aria-label="Back to stakeholders">← Back to Stakeholders</button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- ─────────────── RIGHT: Impact Log ─────────────── -->
+        <aside class="sim-right" aria-label="Impact log and live metrics">
+
+            <div class="sim-right-header">
+                <span class="sim-right-title">Live Metrics</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--green);letter-spacing:0.12em;">● LIVE</span>
+            </div>
+
+            <!-- Per-metric bars — GSAP elastic fills -->
+            <div class="live-metrics" role="region" aria-label="Metric bars">
+                <div class="live-metric-row">
+                    <span class="lm-label">Budget</span>
+                    <div class="lm-bar-track" role="progressbar" aria-label="Budget health">
+                        <div class="lm-bar-fill" id="bar-budget" style="background:var(--green)"></div>
+                    </div>
+                    <span class="lm-value" id="lm-budget-val">₹5.0L</span>
+                </div>
+                <div class="live-metric-row">
+                    <span class="lm-label">Morale</span>
+                    <div class="lm-bar-track" role="progressbar" aria-label="Team morale">
+                        <div class="lm-bar-fill" id="bar-morale" style="background:var(--accent)"></div>
+                    </div>
+                    <span class="lm-value" id="lm-morale-val">80%</span>
+                </div>
+                <div class="live-metric-row">
+                    <span class="lm-label">Trust</span>
+                    <div class="lm-bar-track" role="progressbar" aria-label="Community trust">
+                        <div class="lm-bar-fill" id="bar-trust" style="background:var(--yellow)"></div>
+                    </div>
+                    <span class="lm-value" id="lm-trust-val">70%</span>
+                </div>
+                <div class="live-metric-row">
+                    <span class="lm-label">Timeline</span>
+                    <div class="lm-bar-track" role="progressbar" aria-label="Timeline status">
+                        <div class="lm-bar-fill" id="bar-timeline" style="background:var(--accent)"></div>
+                    </div>
+                    <span class="lm-value" id="lm-timeline-val">On Track</span>
+                </div>
+            </div>
+
+            <!-- Sustainability Compass -->
+            <div class="compass-section" aria-label="Sustainability compass">
+                <div class="compass-label">Sustainability Compass</div>
+                <div class="compass-plot" role="img" aria-label="A cross-axis chart showing sustainability vs impact">
+                    <div class="compass-axis-x" aria-hidden="true"></div>
+                    <div class="compass-axis-y" aria-hidden="true"></div>
+                    <div class="compass-point" id="compass-point" aria-hidden="true"></div>
+                    <span class="axis-label x-high" aria-hidden="true">Sustain</span>
+                    <span class="axis-label x-low"  aria-hidden="true">Burn</span>
+                    <span class="axis-label y-high" aria-hidden="true">Impact</span>
+                    <span class="axis-label y-low"  aria-hidden="true">Stigma</span>
+                </div>
+            </div>
+
+            <!-- Decision Log -->
+            <div class="impact-log-section">
+                <div class="impact-log-header">
+                    <span class="impact-log-title">Decision Log</span>
+                    <span class="log-count" id="log-count">0 entries</span>
+                </div>
+                <ul id="impact-log-list" aria-label="Decision log" aria-live="polite">
+                    <li class="log-empty-msg" id="log-empty">No decisions yet. Begin a simulation.</li>
+                </ul>
+            </div>
+
+        </aside>
+    </div>
+
+    <script type="module" src="simulation.js"></script>
+</body>
+</html>

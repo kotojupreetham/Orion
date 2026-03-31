@@ -5,254 +5,588 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orion — The Decision Engine for Changemakers</title>
     <meta name="description" content="Orion helps young changemakers simulate startup decisions, manage stakeholders, and build real-world social entrepreneurship skills.">
+    <meta name="theme-color" content="#0a0a0f">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Design System (4-layer) -->
-    <link rel="stylesheet" href="css/01-variables.css">
-    <link rel="stylesheet" href="css/02-base.css">
-    <link rel="stylesheet" href="css/03-layout.css">
-    <link rel="stylesheet" href="css/04-components.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="app/style.css">
 
-    <!-- App-specific overrides (evaluation grid, scorecard, etc.) -->
-    <link rel="stylesheet" href="style.css">
-
-    <!-- GSAP + ScrollTrigger -->
+    <!-- GSAP Core + Plugins (loaded before body so they're available inline) -->
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
+    <!-- Theme flash prevention — runs synchronously before paint -->
     <script>
-        // Sync theme before paint
-        (function() {
+        (function () {
             var t = localStorage.getItem('orion-theme') || 'dark';
             document.documentElement.setAttribute('data-theme', t);
         })();
     </script>
+
+    <style>
+        /* ── Extra inline styles needed before style.css fully wires up ── */
+
+        /* Loading screen layered circles */
+        .loader-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid var(--border-strong);
+            animation: loaderRing 2s ease-in-out infinite;
+        }
+        @keyframes loaderRing {
+            0%   { transform: scale(0.8); opacity: 0; }
+            50%  { opacity: 0.5; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        /* Magnetic button reset */
+        .magnetic { position: relative; }
+
+        /* Theme toggle */
+        .theme-toggle {
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: var(--radius-sm);
+            width: 32px; height: 32px;
+            font-size: 15px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            will-change: transform, opacity;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .theme-toggle:hover { background: var(--accent-dim); color: var(--accent); border-color: var(--border-accent); }
+
+        /* Google btn */
+        .google-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: var(--surface-elevated);
+            border: 1.5px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', -apple-system, sans-serif;
+            letter-spacing: -0.01em;
+            cursor: pointer;
+            white-space: nowrap;
+            will-change: transform, opacity;
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            height: 52px;
+            padding: 0 20px;
+        }
+        .google-btn-label {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            line-height: 1;
+            color: #f0f0f5;
+        }
+        [data-theme="light"] .google-btn-label { color: #111118; }
+        .google-btn:hover {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-accent);
+        }
+        .google-btn:hover .google-btn-label { color: var(--accent); }
+
+        /* Workspace selection crossfade target */
+        #center-content-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- ═══════════════ LOADING SCREEN ═══════════════ -->
-    <div id="loading-screen" class="active">
-        <div class="loading-inner">
-            <div class="spinner"></div>
-            <p class="loading-text">Orion</p>
+    <!-- ════════════════════════════════════════════
+         LOADING SCREEN
+         ════════════════════════════════════════════ -->
+    <div id="loading-screen" aria-hidden="true">
+        <div class="loading-inner" style="position:relative; width:120px; height:120px; display:flex; align-items:center; justify-content:center;">
+            <!-- Animated concentric rings -->
+            <div class="loader-ring" style="width:80px;height:80px;animation-delay:0s;"></div>
+            <div class="loader-ring" style="width:100px;height:100px;animation-delay:0.4s;"></div>
+            <div class="loader-ring" style="width:120px;height:120px;animation-delay:0.8s;"></div>
+            <!-- Center orb -->
+            <div style="position:absolute; width:36px; height:36px; border-radius:50%; background: radial-gradient(circle, var(--accent) 0%, transparent 70%); opacity:0.8;"></div>
         </div>
+        <p class="loading-text" style="margin-top:28px; font-size:12px; letter-spacing:0.2em;">INITIALISING ORION</p>
     </div>
 
-    <!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
-    <div id="login-screen" class="hidden">
-        <div class="login-bg-grid"></div>
-        <div class="login-container">
-            <div class="login-logo">Orion<span> — The Decision Engine</span></div>
-            <h1>Built for Changemakers.</h1>
-            <p>Your simulation adapts to your real-world experience — not a generic curriculum.</p>
-            <button id="login-btn" class="google-btn magnetic" style="padding:16px 32px; font-size:1rem; border-radius:var(--radius-md);">
-                <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                Sign in with Google
+    <!-- ════════════════════════════════════════════
+         LOGIN SCREEN
+         ════════════════════════════════════════════ -->
+    <div id="login-screen" class="hidden" role="main">
+        <div class="login-bg-grid" aria-hidden="true"></div>
+
+        <!-- Theme toggle (login) -->
+        <button class="theme-toggle magnetic"
+                id="login-theme-btn"
+                title="Switch theme"
+                aria-label="Toggle light/dark theme"
+                style="position:absolute; top:20px; right:20px; z-index:10;">
+            <span id="login-theme-icon">☽</span>
+        </button>
+
+        <div class="login-container" id="login-card">
+
+            <!-- Decorative orb -->
+            <div class="login-orb-wrap" aria-hidden="true">
+                <div class="login-orb"></div>
+                <div class="login-orb-ring login-orb-ring-1"></div>
+                <div class="login-orb-ring login-orb-ring-2"></div>
+            </div>
+
+            <!-- Logo -->
+            <div class="login-logo-block">
+                <div class="login-logo">Orion</div>
+                <div class="login-logo-sub">Decision Engine</div>
+            </div>
+
+            <!-- Headline -->
+            <h1 class="login-headline">Built for <em>Changemakers.</em></h1>
+
+            <!-- Subtext -->
+            <p class="login-sub">Your simulation adapts to your real-world experience — not a generic curriculum.</p>
+
+            <!-- CTA hint -->
+            <p class="login-cta-hint">Sign in to enter your workspace.</p>
+
+            <button id="login-btn"
+                    class="google-btn magnetic"
+                    aria-label="Sign in with Google">
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink:0;">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span class="google-btn-label">Sign in with Google</span>
             </button>
-            <button class="theme-toggle magnetic" id="login-theme-btn" title="Switch theme" style="position:absolute; top:20px; right:20px;">☽</button>
         </div>
     </div>
 
-    <!-- ═══════════════ ONBOARDING MODAL ═══════════════ -->
-    <div id="onboarding-overlay" class="hidden">
+    <!-- ════════════════════════════════════════════
+         ONBOARDING MODAL
+         ════════════════════════════════════════════ -->
+    <div id="onboarding-overlay" class="hidden" role="dialog" aria-modal="true" aria-label="Onboarding">
         <div class="onboarding-modal-inner">
-            <button id="close-onboarding-btn" class="close-onboarding-btn" title="Cancel">✕</button>
-            <iframe id="onboarding-iframe" src="" frameborder="0"></iframe>
+            <button id="close-onboarding-btn"
+                    class="close-onboarding-btn magnetic"
+                    title="Close"
+                    aria-label="Close onboarding">✕</button>
+            <iframe id="onboarding-iframe" src="" frameborder="0" title="Onboarding assessment"></iframe>
         </div>
     </div>
 
-    <!-- ═══════════════ MAIN APP ═══════════════ -->
-    <div id="app-screen" class="hidden">
+    <!-- ════════════════════════════════════════════
+         MAIN APP SHELL
+         ════════════════════════════════════════════ -->
+    <div id="app-screen" class="hidden" id="app-wrapper">
 
-        <!-- TOP TOOLBAR -->
-        <header class="toolbar">
+        <!-- ── TOP TOOLBAR ── -->
+        <header class="toolbar" role="banner">
             <div class="toolbar-left">
-                <div class="app-logo">Orion<span> • Decision Engine</span></div>
-                <div class="toolbar-divider"></div>
-                <button id="new-workspace-btn" class="toolbar-btn primary-toolbar-btn magnetic">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    New Conversation
+                <div class="app-logo" id="app-logo">
+                    Orion<span> — Decision Engine</span>
+                </div>
+                <div class="toolbar-divider" aria-hidden="true"></div>
+                <button id="new-workspace-btn"
+                        class="toolbar-btn primary-toolbar-btn magnetic"
+                        aria-label="Create new conversation">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    New
                 </button>
             </div>
-            <div class="toolbar-center">
+
+            <div class="toolbar-center" role="navigation" aria-label="Breadcrumb">
                 <span id="active-workspace-breadcrumb" class="breadcrumb-text">Select a workspace</span>
             </div>
+
             <div class="toolbar-right">
-                <button class="theme-toggle magnetic" id="theme-btn" title="Switch theme">☽</button>
-                <img id="toolbar-user-photo" src="" alt="" class="toolbar-avatar">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle magnetic"
+                        id="theme-btn"
+                        title="Switch theme"
+                        aria-label="Toggle light/dark theme">
+                    <span id="theme-icon">☽</span>
+                </button>
+
+                <!-- User avatar -->
+                <img id="toolbar-user-photo"
+                     src=""
+                     alt="User avatar"
+                     class="toolbar-avatar"
+                     style="display:none;">
+
+                <!-- Level badge -->
                 <span id="toolbar-level-badge" class="hidden"></span>
-                <button id="logout-btn" class="toolbar-icon-btn magnetic" title="Logout">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+
+                <!-- Logout -->
+                <button id="logout-btn"
+                        class="toolbar-icon-btn magnetic"
+                        title="Sign out"
+                        aria-label="Sign out">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
                 </button>
             </div>
         </header>
 
-        <!-- MAIN BODY (sidebar + editor + right panel) -->
-        <div class="ide-body" id="ide-body">
+        <!-- ── IDE BODY ── -->
+        <div class="ide-body" id="ide-body" role="main">
 
-            <!-- LEFT SIDEBAR -->
-            <aside class="ide-sidebar glass" id="sidebar">
-                <div class="sidebar-tab-bar">
-                    <button class="sidebar-tab active" data-tab="explorer" title="Workspaces">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <!-- ── LEFT SIDEBAR ── -->
+            <aside class="ide-sidebar" id="sidebar" aria-label="Project Explorer">
+                <div class="sidebar-tab-bar" role="tablist" aria-label="Sidebar panels">
+
+                    <button class="sidebar-tab active magnetic"
+                            data-tab="explorer"
+                            role="tab"
+                            aria-selected="true"
+                            aria-controls="panel-explorer"
+                            title="Workspaces">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                        </svg>
                     </button>
-                    <button class="sidebar-tab" data-tab="search" title="Search">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+
+                    <button class="sidebar-tab magnetic"
+                            data-tab="search"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="panel-search"
+                            title="Search">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
                     </button>
+
                 </div>
-                <div class="sidebar-panel" id="panel-explorer">
-                    <p class="sidebar-panel-title">PROJECT EXPLORER</p>
-                    <div id="workspace-list"></div>
-                    <p id="no-workspace-msg" class="hidden sidebar-empty-msg">No workspaces yet.<br>Click "New Conversation" to start.</p>
+
+                <!-- Explorer Panel -->
+                <div class="sidebar-panel" id="panel-explorer" role="tabpanel" aria-labelledby="">
+                    <p class="sidebar-panel-title label-xs">Project Explorer</p>
+                    <div id="workspace-list" role="listbox" aria-label="Workspace list"></div>
+                    <p id="no-workspace-msg" class="hidden sidebar-empty-msg">
+                        No workspaces yet.<br>Click "New" to start.
+                    </p>
                 </div>
-                <div class="sidebar-panel hidden" id="panel-search">
-                    <p class="sidebar-panel-title">SEARCH</p>
-                    <input type="text" class="search-input" placeholder="Search workspaces..." id="workspace-search">
+
+                <!-- Search Panel -->
+                <div class="sidebar-panel hidden" id="panel-search" role="tabpanel">
+                    <p class="sidebar-panel-title label-xs">Search</p>
+                    <input type="search"
+                           class="search-input"
+                           placeholder="Search workspaces…"
+                           id="workspace-search"
+                           aria-label="Search workspaces">
                 </div>
             </aside>
 
-            <!-- CENTER: Main Editor -->
-            <main class="ide-editor glass">
-                <!-- Empty State -->
-                <div id="empty-state" class="editor-empty active">
-                    <div class="empty-state-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.3"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    </div>
-                    <h3>No workspace selected</h3>
-                    <p>Select a workspace from the explorer, or start a new conversation.</p>
-                    <button class="btn btn-primary magnetic" id="empty-new-btn">+ New Conversation</button>
-                </div>
+            <!-- ── CENTER EDITOR ── -->
+            <main class="ide-editor" id="ide-editor" aria-label="Editor">
 
-                <!-- Workspace View -->
-                <div id="workspace-view" class="hidden">
-                    <div class="editor-tab-bar">
-                        <div class="editor-tab active" id="editor-active-tab">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            <span id="workspace-tab-title">workspace.nyx</span>
+                <!-- Crossfade wrapper — GSAP targets this -->
+                <div id="center-content-wrap">
+
+                    <!-- Empty State -->
+                    <div id="empty-state" class="editor-empty active" aria-live="polite">
+                        <div class="empty-state-icon gsap-reveal" aria-hidden="true">
+                            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.25">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="gsap-reveal" style="transition-delay:.05s">No workspace selected</h3>
+                        <p class="gsap-reveal" style="transition-delay:.1s">Select a workspace from the explorer, or start a new conversation.</p>
+                        <button class="btn btn-primary magnetic gsap-reveal"
+                                id="empty-new-btn"
+                                style="transition-delay:.15s"
+                                aria-label="Create new conversation">
+                            + New Conversation
+                        </button>
+                    </div>
+
+                    <!-- Workspace Chat View -->
+                    <div id="workspace-view" class="hidden" role="region" aria-label="Workspace">
+                        <div class="editor-tab-bar" role="tablist">
+                            <div class="editor-tab active" id="editor-active-tab" role="tab" aria-selected="true">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                <span id="workspace-tab-title">workspace.nyx</span>
+                            </div>
+                        </div>
+
+                        <div class="editor-header">
+                            <div class="editor-header-left">
+                                <h2 id="workspace-title"
+                                    contenteditable="true"
+                                    spellcheck="false"
+                                    aria-label="Workspace title (editable)">Workspace Title</h2>
+                                <span id="workspace-level-pill" class="hidden" role="status"></span>
+                            </div>
+                            <div class="editor-header-right">
+                                <span class="editor-hint">Title auto-saves on blur</span>
+                            </div>
+                        </div>
+
+                        <div class="messages-container" id="messages-container" role="log" aria-live="polite" aria-label="Messages">
+
+                            <!-- ── Chat Welcome State (shown when no messages) ── -->
+                            <div id="chat-welcome" class="chat-welcome" aria-hidden="true">
+
+                                <!-- Greeting -->
+                                <div class="cw-greeting" id="cw-greeting">
+                                    <span class="cw-wave">👋</span>
+                                    <div>
+                                        <h2 class="cw-title" id="cw-title">Welcome back</h2>
+                                        <p class="cw-sub" id="cw-sub">Your workspace is ready. Start by sharing an idea, question, or challenge.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Idea echo card -->
+                                <div class="cw-idea-card" id="cw-idea-card" aria-label="Your startup idea">
+                                    <span class="cw-idea-label">Your Idea</span>
+                                    <p class="cw-idea-text" id="cw-idea-text"></p>
+                                </div>
+
+                                <!-- Divider label -->
+                                <div class="cw-divider-row" aria-hidden="true">
+                                    <span class="cw-divider-line"></span>
+                                    <span class="cw-divider-text">Try asking</span>
+                                    <span class="cw-divider-line"></span>
+                                </div>
+
+                                <!-- Prompt chips -->
+                                <div class="cw-chips" id="cw-chips" role="list" aria-label="Suggested prompts"></div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="input-area">
+                            <div class="input-wrapper">
+                                <textarea id="message-input"
+                                          placeholder="Type your idea, note, or hypothesis…"
+                                          rows="1"
+                                          aria-label="Message input"
+                                          aria-multiline="true"></textarea>
+                                <button id="send-btn"
+                                        class="send-btn magnetic"
+                                        title="Send (Enter)"
+                                        aria-label="Send message">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                                        <line x1="22" y1="2" x2="11" y2="13"/>
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="input-hint">
+                                Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line
+                            </p>
                         </div>
                     </div>
-                    <div class="editor-header">
-                        <div class="editor-header-left">
-                            <h2 id="workspace-title" contenteditable="true" spellcheck="false">Workspace Title</h2>
-                            <span id="workspace-level-pill" class="hidden"></span>
+
+                    <!-- Evaluation View -->
+                    <div id="evaluation-view" class="hidden" role="region" aria-label="Evaluation">
+                        <div class="eval-header">
+                            <h2 class="gsap-reveal">Viability Stress Test</h2>
+                            <p class="gsap-reveal">Evaluate your startup for real-world survival.</p>
                         </div>
-                        <div class="editor-header-right">
-                            <span class="editor-hint">Title auto-saves on blur</span>
+
+                        <div id="eval-grid" class="eval-grid hidden">
+                            <div class="eval-box gsap-reveal" id="eval-box-vision">
+                                <h4 class="eval-box-title">Core Vision <span class="badge">Problem &amp; Motivation</span></h4>
+                                <div class="eval-box-body" id="eval-q-vision"></div>
+                            </div>
+                            <div class="eval-box gsap-reveal" id="eval-box-strategy">
+                                <h4 class="eval-box-title">Strategic Moat <span class="badge">Market &amp; Users</span></h4>
+                                <div class="eval-box-body" id="eval-q-strategy"></div>
+                            </div>
+                            <div class="eval-box gsap-reveal" id="eval-box-resources">
+                                <h4 class="eval-box-title">Resource Architecture <span class="badge">Budget &amp; Tools</span></h4>
+                                <div class="eval-box-body" id="eval-q-resources"></div>
+                            </div>
+                            <div class="eval-box gsap-reveal" id="eval-box-risks">
+                                <h4 class="eval-box-title">Operational Risk <span class="badge">Team &amp; Sustainability</span></h4>
+                                <div class="eval-box-body" id="eval-q-risks"></div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="messages-container" id="messages-container"></div>
-                    <div class="input-area">
-                        <div class="input-wrapper">
-                            <textarea id="message-input" placeholder="Type your idea, note, or hypothesis..." rows="1"></textarea>
-                            <button id="send-btn" class="send-btn magnetic" title="Send (Enter)">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+
+                        <div id="eval-q-container" class="hidden"></div>
+
+                        <div id="eval-finalize-container"
+                             class="hidden"
+                             style="margin-top:32px; width:100%; display:flex; justify-content:center;">
+                            <button id="eval-finalize-btn"
+                                    class="ob-btn primary magnetic"
+                                    style="padding:15px 48px;"
+                                    aria-label="Analyze startup potential">
+                                Analyze Startup Potential →
                             </button>
                         </div>
-                        <p class="input-hint">Press <kbd>Enter</kbd> to send, <kbd>Shift+Enter</kbd> for new line</p>
-                    </div>
-                </div>
 
-                <!-- Evaluation View -->
-                <div id="evaluation-view" class="hidden">
-                    <div class="eval-header">
-                        <h2>Viability Stress Test</h2>
-                        <p>Evaluate your startup for real-world survival.</p>
-                    </div>
-                    <div id="eval-grid" class="eval-grid hidden">
-                        <div class="eval-box" id="eval-box-vision">
-                            <h4 class="eval-box-title">Core Vision <span class="badge">Problem & Motivation</span></h4>
-                            <div class="eval-box-body" id="eval-q-vision"></div>
+                        <div id="eval-loading" class="hidden" aria-live="polite" aria-busy="true">
+                            <div class="eval-orb" aria-hidden="true"></div>
+                            <p>Generating Startup Survival Scorecard…</p>
                         </div>
-                        <div class="eval-box" id="eval-box-strategy">
-                            <h4 class="eval-box-title">Strategic Moat <span class="badge">Market & Users</span></h4>
-                            <div class="eval-box-body" id="eval-q-strategy"></div>
-                        </div>
-                        <div class="eval-box" id="eval-box-resources">
-                            <h4 class="eval-box-title">Resource Architecture <span class="badge">Budget & Tools</span></h4>
-                            <div class="eval-box-body" id="eval-q-resources"></div>
-                        </div>
-                        <div class="eval-box" id="eval-box-risks">
-                            <h4 class="eval-box-title">Operational Risk <span class="badge">Team & Sustainability</span></h4>
-                            <div class="eval-box-body" id="eval-q-risks"></div>
-                        </div>
+
+                        <div id="eval-scorecard" class="hidden" aria-live="polite"></div>
                     </div>
-                    <div id="eval-q-container" class="hidden"></div>
-                    <div id="eval-finalize-container" class="hidden" style="margin-top:32px;width:100%;display:flex;justify-content:center;">
-                        <button id="eval-finalize-btn" class="ob-btn primary" style="padding:16px 48px;">Analyze Startup Potential →</button>
-                    </div>
-                    <div id="eval-loading" class="hidden">
-                        <div class="eval-orb"></div>
-                        <p>Generating Startup Survival Scorecard...</p>
-                    </div>
-                    <div id="eval-scorecard" class="hidden"></div>
-                </div>
+
+                </div><!-- /center-content-wrap -->
             </main>
 
-            <!-- RIGHT PANEL -->
-            <aside class="ide-right-panel glass" id="right-panel">
+            <!-- ── RIGHT PANEL ── -->
+            <aside class="ide-right-panel" id="right-panel" aria-label="Workspace details">
                 <div class="right-panel-empty" id="right-panel-empty">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.25" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
                     <p>Select a workspace to view details</p>
                 </div>
+
                 <div class="right-panel-content hidden" id="right-panel-content">
-                    <!-- Hidden internal refs used by app.js -->
-                    <span id="rp-level-icon" class="hidden"></span>
-                    <span id="rp-level-name" class="hidden"></span>
-                    <span id="rp-level-sub" class="hidden"></span>
-                    <span id="rp-score-fill" class="hidden"></span>
-                    <span id="rp-score-text" class="hidden"></span>
+                    <!-- Hidden refs used by app logic -->
+                    <span id="rp-level-icon"  class="hidden"></span>
+                    <span id="rp-level-name"  class="hidden"></span>
+                    <span id="rp-level-sub"   class="hidden"></span>
+                    <span id="rp-score-fill"  class="hidden"></span>
+                    <span id="rp-score-text"  class="hidden"></span>
 
                     <div class="right-panel-section">
-                        <p class="right-panel-label">WORKSPACE</p>
+                        <p class="right-panel-label">Workspace</p>
                         <div class="detail-row" style="align-items:flex-start;">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px;"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px; flex-shrink:0;" aria-hidden="true">
+                                <line x1="4" y1="9" x2="20" y2="9"/>
+                                <line x1="4" y1="15" x2="20" y2="15"/>
+                                <line x1="10" y1="3" x2="8" y2="21"/>
+                                <line x1="16" y1="3" x2="14" y2="21"/>
+                            </svg>
                             <span id="rp-idea-text" class="rp-idea-text"></span>
                         </div>
                         <div class="eval-action-section">
-                            <button id="start-eval-btn" class="ob-btn primary full">Run Viability Test →</button>
+                            <button id="start-eval-btn" class="ob-btn primary full magnetic" aria-label="Run viability test">
+                                Run Viability Test →
+                            </button>
                         </div>
                     </div>
+
                     <div class="right-panel-section">
-                        <p class="right-panel-label">STATS</p>
+                        <p class="right-panel-label">Stats</p>
                         <div class="detail-row">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
                             <span id="rp-created-at">—</span>
                         </div>
                         <div class="detail-row">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
                             <span id="rp-msg-count">0 notes</span>
                         </div>
                     </div>
+
                     <div class="right-panel-section">
-                        <p class="right-panel-label">YOUR SIMULATION</p>
-                        <p class="rp-sim-desc" id="rp-sim-desc">Your workspace is calibrated to your profile. Start adding ideas and notes to begin.</p>
+                        <p class="right-panel-label">Your Simulation</p>
+                        <p class="rp-sim-desc" id="rp-sim-desc">
+                            Your workspace is calibrated to your profile. Start adding ideas and notes to begin.
+                        </p>
                         <div class="eval-action-section">
-                            <button id="launch-sim-btn" class="btn btn-primary magnetic full" style="background:linear-gradient(135deg, var(--cyan), var(--purple)); border:none; padding:12px 20px; font-size:0.95rem;">🚀 Launch Simulation →</button>
+                            <button id="launch-sim-btn"
+                                    class="ob-btn primary full magnetic"
+                                    aria-label="Launch simulation">
+                                🚀 Launch Simulation →
+                            </button>
                         </div>
                     </div>
                 </div>
             </aside>
-        </div>
 
-        <!-- BOTTOM STATUS BAR -->
-        <footer class="status-bar">
+        </div><!-- /ide-body -->
+
+        <!-- ── STATUS BAR ── -->
+        <footer class="status-bar" role="contentinfo">
             <div class="status-left">
-                <span class="status-dot active-dot"></span>
+                <span class="status-dot" aria-hidden="true"></span>
                 <span id="status-user-name">—</span>
                 <span id="status-level" class="hidden"></span>
             </div>
             <div class="status-right">
                 <span class="status-item" id="status-workspace">No workspace open</span>
-                <span class="status-sep">·</span>
+                <span class="status-sep" aria-hidden="true">·</span>
                 <span class="status-item" id="status-msg-count">0 notes</span>
             </div>
         </footer>
+
+    </div><!-- /app-screen -->
+
+    <!-- ════════════════════════════════════════════
+         ORION MODAL SYSTEM
+         ════════════════════════════════════════════ -->
+    <div id="orion-modal-overlay" aria-hidden="true">
+        <div id="orion-modal" role="dialog" aria-modal="true">
+
+            <!-- Icon / badge -->
+            <div class="om-icon-wrap" id="om-icon-wrap" aria-hidden="true">
+                <span id="om-icon">✦</span>
+            </div>
+
+            <!-- Title & body -->
+            <h3 class="om-title" id="om-title"></h3>
+            <p  class="om-body"  id="om-body"></p>
+
+            <!-- Prompt textarea (shown for prompt type) -->
+            <div class="om-input-wrap hidden" id="om-input-wrap">
+                <textarea
+                    id="om-textarea"
+                    class="om-textarea"
+                    rows="4"
+                    placeholder="Describe your idea…"
+                    aria-label="Idea input"
+                ></textarea>
+                <span class="om-char-hint" id="om-char-hint">20 characters minimum</span>
+            </div>
+
+            <!-- Actions -->
+            <div class="om-actions" id="om-actions"></div>
+        </div>
     </div>
 
-    <script type="module" src="js/app.js"></script>
+    <!-- ════════════════════════════════════════════
+         GSAP ANIMATION ENGINE
+         ════════════════════════════════════════════ -->
+    <script src="app/js/gsap-animations.js"></script>
+
+    <!-- ════════════════════════════════════════════
+         MAIN APP LOGIC
+         ════════════════════════════════════════════ -->
+    <script type="module" src="app/js/app.js"></script>
+
 </body>
 </html>
