@@ -29,8 +29,6 @@ import {
 const GEMINI_API_KEY = aiApiKey || "AIzaSyDR-v7ncbMDKPgzDnrIiAoAKTs3LDS2v9c";
 const GEMINI_MODEL = "gemini-2.0-flash";
 const GEMINI_ENDPOINT_BASE = `https://generativelanguage.googleapis.com/v1beta2/models/${GEMINI_MODEL}`;
-const GEMINI_MODEL = "gemini-2.0-flash";
-const GEMINI_ENDPOINT_BASE = `https://generativelanguage.googleapis.com/v1beta2/models/${GEMINI_MODEL}`;
 
 // ══════════════════════════════════════════════════════════════
 // APP STATE
