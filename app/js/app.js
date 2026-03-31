@@ -662,8 +662,7 @@ Your job:
 
         const payload = {
             contents: [
-                { role: "user", parts: [{ text: systemPrompt }] },
-                { role: "model", parts: [{ text: "Understood. I'm ready to help you sharpen your startup thinking!" }] },
+                { role: "system", parts: [{ text: systemPrompt }] },
                 { role: "user", parts: [{ text: userMessage }] },
             ],
             generationConfig: { temperature: 0.75, maxOutputTokens: 512 },
@@ -698,7 +697,13 @@ Your job:
         }
 
         const data = await res.json();
-        const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const aiText =
+            data?.candidates?.[0]?.content?.[0]?.text ||
+            data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+            data?.candidates?.[0]?.message?.content?.text ||
+            data?.output?.text?.[0] ||
+            data?.output?.content?.[0]?.text ||
+            "";
         return aiText?.trim() || "I couldn't generate a response. Please try again.";
     } catch (e) {
         console.error("Gemini error:", e);
