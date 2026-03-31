@@ -1,0 +1,189 @@
+/* ═══════════════════════════════════════════════════════════════
+   ORION — Design Tokens
+   Source: temp-UI animation/app/style.css §1-2
+   Dual-theme token system · Cinematic Minimalism
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════
+   DARK THEME (default)
+   ══════════════════════════════════════════════════════════════ */
+:root,
+[data-theme="dark"] {
+    /* ── Backgrounds ── */
+    --bg-primary:       #0a0a0f;
+    --bg-secondary:     #0f0f18;
+    --surface:          rgba(18, 18, 30, 0.72);
+    --surface-solid:    #111119;
+    --surface-elevated: #18182a;
+    --surface-hover:    rgba(255, 255, 255, 0.05);
+
+    /* ── Accent — Electric Blue ── */
+    --accent:           #4f8ef7;
+    --accent-hover:     #6ba1ff;
+    --accent-dim:       rgba(79, 142, 247, 0.12);
+    --accent-glow:      rgba(79, 142, 247, 0.22);
+
+    /* ── Extended Palette ── */
+    --cyan:    #22d3ee;
+    --purple:  #a78bfa;
+    --magenta: #c026d3;
+    --green:   #4ade80;
+    --amber:   #f59e0b;
+    --red:     #ef4444;
+
+    --cyan-glow:    rgba(34, 211, 238, 0.18);
+    --purple-glow:  rgba(167, 139, 250, 0.18);
+    --magenta-glow: rgba(192, 38, 211, 0.18);
+    --green-dim:    rgba(74, 222, 128, 0.12);
+    --amber-dim:    rgba(245, 158, 11, 0.12);
+    --red-dim:      rgba(239, 68, 68, 0.12);
+    --yellow-dim:   rgba(251, 191, 36, 0.12);
+
+    /* ── Typography ── */
+    --text:            #f0f0f5;
+    --text-secondary:  #9090a8;
+    --text-muted:      #5a5a72;
+    --text-inverse:    #0a0a0f;
+
+    /* ── Borders ── */
+    --border:          rgba(255, 255, 255, 0.07);
+    --border-strong:   rgba(255, 255, 255, 0.12);
+    --border-accent:   rgba(79, 142, 247, 0.32);
+
+    /* ── Inputs ── */
+    --input-bg:        rgba(255, 255, 255, 0.04);
+    --input-border:    rgba(255, 255, 255, 0.10);
+
+    /* ── Workspace Items ── */
+    --ws-item-bg:      rgba(255, 255, 255, 0.025);
+    --ws-active-bg:    rgba(79, 142, 247, 0.08);
+
+    /* ── Messages ── */
+    --msg-bg:          rgba(255, 255, 255, 0.025);
+
+    /* ── Status ── */
+    --status-dot-color: var(--green);
+
+    /* ── Ambient light spots (mouse-tracked) ── */
+    --light-spot-a:    rgba(79, 142, 247, 0.04);
+    --light-spot-b:    rgba(167, 139, 250, 0.03);
+
+    /* ── Glass ── */
+    --glass-blur:      16px;
+
+    /* ── Shadows ── */
+    --shadow-sm:       0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md:       0 4px 14px rgba(0, 0, 0, 0.45);
+    --shadow-lg:       0 12px 40px rgba(0, 0, 0, 0.55);
+    --shadow-accent:   0 2px 12px rgba(79, 142, 247, 0.22);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LIGHT THEME
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+    /* ── Backgrounds ── */
+    --bg-primary:       #fafafa;
+    --bg-secondary:     #f0f0f5;
+    --surface:          rgba(255, 255, 255, 0.82);
+    --surface-solid:    #f5f5fa;
+    --surface-elevated: #ffffff;
+    --surface-hover:    rgba(0, 0, 0, 0.04);
+
+    /* ── Accent — Deep Indigo ── */
+    --accent:           #4338ca;
+    --accent-hover:     #3730a3;
+    --accent-dim:       rgba(67, 56, 202, 0.10);
+    --accent-glow:      rgba(67, 56, 202, 0.18);
+
+    /* ── Extended Palette ── */
+    --cyan:    #0891b2;
+    --purple:  #7c3aed;
+    --magenta: #a21caf;
+    --green:   #16a34a;
+    --amber:   #d97706;
+    --red:     #dc2626;
+
+    --cyan-glow:    rgba(8, 145, 178, 0.14);
+    --purple-glow:  rgba(124, 58, 237, 0.14);
+    --magenta-glow: rgba(162, 28, 175, 0.14);
+    --green-dim:    rgba(22, 163, 74, 0.10);
+    --amber-dim:    rgba(217, 119, 6, 0.10);
+    --red-dim:      rgba(220, 38, 38, 0.10);
+    --yellow-dim:   rgba(217, 119, 6, 0.10);
+
+    /* ── Typography ── */
+    --text:            #111118;
+    --text-secondary:  #5a5a72;
+    --text-muted:      #9090a8;
+    --text-inverse:    #ffffff;
+
+    /* ── Borders ── */
+    --border:          rgba(0, 0, 0, 0.08);
+    --border-strong:   rgba(0, 0, 0, 0.13);
+    --border-accent:   rgba(67, 56, 202, 0.28);
+
+    /* ── Inputs ── */
+    --input-bg:        rgba(0, 0, 0, 0.03);
+    --input-border:    rgba(0, 0, 0, 0.10);
+
+    /* ── Workspace Items ── */
+    --ws-item-bg:      rgba(0, 0, 0, 0.025);
+    --ws-active-bg:    rgba(67, 56, 202, 0.06);
+
+    /* ── Messages ── */
+    --msg-bg:          rgba(0, 0, 0, 0.025);
+
+    /* ── Status ── */
+    --status-dot-color: var(--green);
+
+    /* ── Ambient light spots ── */
+    --light-spot-a:    rgba(67, 56, 202, 0.03);
+    --light-spot-b:    rgba(124, 58, 237, 0.02);
+
+    /* ── Glass ── */
+    --glass-blur:      16px;
+
+    /* ── Shadows ── */
+    --shadow-sm:       0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md:       0 4px 14px rgba(0, 0, 0, 0.12);
+    --shadow-lg:       0 12px 40px rgba(0, 0, 0, 0.18);
+    --shadow-accent:   0 2px 12px rgba(67, 56, 202, 0.16);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SHARED TOKENS (theme-independent)
+   ══════════════════════════════════════════════════════════════ */
+:root {
+    /* ── Mouse tracking (set by JS) ── */
+    --mouse-x: 50%;
+    --mouse-y: 50%;
+
+    /* ── Radii ── */
+    --radius-xs:   4px;
+    --radius-sm:   8px;
+    --radius-md:   14px;
+    --radius-lg:   20px;
+    --radius-xl:   28px;
+    --radius-full: 9999px;
+
+    /* ── Easings ── */
+    --ease-smooth:    cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-expo:   cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-elastic:   cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-spring:    cubic-bezier(0.22, 1.45, 0.36, 1);
+
+    /* ── Z-indexes ── */
+    --z-dropdown:  50;
+    --z-sticky:    100;
+    --z-overlay:   500;
+    --z-modal:     900;
+    --z-toast:     999;
+
+    /* ── Level Colors ── */
+    --explorer:  #4ade80;
+    --learner:   #f59e0b;
+    --builder:   #fb923c;
+    --catalyst:  #818cf8;
+}

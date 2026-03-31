@@ -1,4 +1,338 @@
 <!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion — Decision Intelligence for Young Changemakers</title>
+    <meta name="description" content="A visual decision intelligence platform helping young social entrepreneurs make better decisions, manage risks, and balance social impact with sustainability.">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/layout-editor.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/onboarding.css">
+    <link rel="stylesheet" href="css/simulation.css">
+    <link rel="stylesheet" href="css/grid.css">
+
+    <!-- GridStack -->
+    <link href="https://cdn.jsdelivr.net/npm/gridstack@10.3.1/dist/gridstack.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/gridstack@10.3.1/dist/gridstack-all.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body class="no-transition">
+
+<!-- ═══════════════ LOADING SCREEN ═══════════════ -->
+<div id="loading-screen">
+    <div class="loading-rings">
+        <div class="loading-ring"></div>
+        <div class="loading-ring"></div>
+        <div class="loading-ring"></div>
+        <div class="loading-orb"></div>
+    </div>
+    <div class="loading-text">Initializing Orion</div>
+</div>
+
+<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+<div id="login-screen" class="hidden">
+    <div class="login-container">
+        <div class="login-orb-wrap">
+            <div class="login-orb"></div>
+            <div class="login-orb-ring"></div>
+            <div class="login-orb-ring"></div>
+        </div>
+        <div class="login-brand">Orion</div>
+        <p class="login-tagline">Decision Intelligence for Young Changemakers</p>
+        <button id="google-login-btn">
+            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.2H42V20H24v8h11.3C33.9 33.5 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C33.9 5.9 29.2 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.5-.4-3.8z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.5 18.9 13 24 13c3 0 5.8 1.1 7.9 3l5.7-5.7C33.9 5.9 29.2 4 24 4c-7.3 0-13.7 4-17.1 10l-.6.7z"/><path fill="#4CAF50" d="M24 44c5 0 9.6-1.8 13.2-4.8l-6.1-5.2c-2 1.5-4.5 2.4-7.1 2.4-5.3 0-9.8-3.5-11.3-8.3l-6.5 5C9.9 39.6 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.2H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.1 5.2C36.6 39.4 44 34 44 24c0-1.3-.1-2.5-.4-3.8z"/></svg>
+            Sign in with Google
+        </button>
+        <p class="login-footer">By signing in, you agree to build something meaningful ✨</p>
+    </div>
+</div>
+
+<!-- ═══════════════ ONBOARDING OVERLAY ═══════════════ -->
+<div id="onboarding-overlay" class="hidden" style="position:fixed;inset:0;z-index:600;background:var(--bg-primary);">
+    <div class="ob-progress-track"><div class="ob-progress-fill" id="ob-progress"></div></div>
+    <div class="ob-header">
+        <div class="ob-logo">Orion <span>assessment</span></div>
+        <div class="ob-header-right">
+            <span class="ob-step-label" id="ob-step-label">Welcome</span>
+        </div>
+    </div>
+    <div class="ob-stage">
+        <!-- WELCOME -->
+        <div class="ob-screen" id="ob-screen-welcome">
+            <div class="ob-screen-inner">
+                <div class="ob-eyebrow">Level Assessment</div>
+                <h1 class="ob-big-title">Let's find your <em>starting level</em></h1>
+                <p class="ob-body-text">Answer a few quick questions about your social initiative and we'll calibrate Orion to your experience level.</p>
+                <div class="ob-level-chips">
+                    <span class="ob-chip explorer">🌱 Explorer</span>
+                    <span class="ob-chip learner">📚 Learner</span>
+                    <span class="ob-chip builder">🔨 Builder</span>
+                    <span class="ob-chip catalyst">⚡ Catalyst</span>
+                </div>
+                <div class="ob-nav"><div></div><button class="ob-cta-btn" id="ob-start-btn">Begin Assessment →</button></div>
+            </div>
+        </div>
+        <!-- PROFILE -->
+        <div class="ob-screen hidden" id="ob-screen-profile">
+            <div class="ob-screen-inner">
+                <div class="ob-eyebrow">Quick Profile</div>
+                <h2 class="ob-question-title">Tell us about yourself</h2>
+                <div class="ob-input-stack">
+                    <div class="ob-field"><label class="ob-field-label">Name</label><input type="text" class="ob-text-input" id="prof-name" placeholder="Your first name"></div>
+                    <div class="ob-field-row">
+                        <div class="ob-field"><label class="ob-field-label">Age</label><input type="number" class="ob-text-input" id="prof-age" placeholder="16" min="12" max="40"></div>
+                        <div class="ob-field"><label class="ob-field-label">Gender</label>
+                            <select class="ob-text-input ob-select" id="prof-gender"><option value="">Select</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option><option value="prefer-not">Prefer not to say</option></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="ob-nav"><div></div><button class="ob-cta-btn disabled" id="submit-profile-btn" disabled>Continue →</button></div>
+            </div>
+        </div>
+        <!-- IDEA -->
+        <div class="ob-screen hidden" id="ob-screen-idea">
+            <div class="ob-screen-inner">
+                <div class="ob-eyebrow">Your Initiative</div>
+                <h2 class="ob-question-title">What's your social initiative idea?</h2>
+                <p class="ob-body-text">Describe the problem you want to solve and your proposed approach.</p>
+                <div class="ob-textarea-wrap">
+                    <textarea class="ob-textarea" id="ob-idea-input" placeholder="e.g. A peer mentoring network for rural teens dealing with anxiety..." rows="4"></textarea>
+                    <span class="ob-char-hint" id="ob-idea-char-hint">20 characters minimum</span>
+                </div>
+                <div class="ob-nav"><div></div><button class="ob-cta-btn disabled" id="ob-submit-idea-btn" disabled>Start Questions →</button></div>
+            </div>
+        </div>
+        <!-- LOADING -->
+        <div class="ob-screen hidden ob-loading-screen" id="ob-screen-loading">
+            <div class="ob-screen-inner"><div class="ob-orb"></div><h2 class="ob-question-title">Analyzing your responses…</h2><p class="ob-body-text">Orion is calibrating your experience level.</p></div>
+        </div>
+        <!-- QUESTION -->
+        <div class="ob-screen hidden" id="ob-screen-question">
+            <div class="ob-screen-inner">
+                <div class="ob-q-meta"><span class="ob-q-step" id="ob-q-step">Step 1</span></div>
+                <h3 class="ob-question-title" id="ob-q-title"></h3>
+                <p class="ob-body-text" id="ob-q-text"></p>
+                <div class="ob-options" id="ob-q-options"></div>
+                <div class="ob-textarea-wrap hidden" id="ob-q-text-area">
+                    <textarea class="ob-textarea" id="ob-q-textarea" placeholder="Share your thoughts..." rows="4"></textarea>
+                </div>
+                <div class="ob-nav"><div></div><button class="ob-cta-btn" id="ob-next-btn">Continue →</button></div>
+            </div>
+        </div>
+        <!-- RESULT -->
+        <div class="ob-screen hidden" id="ob-screen-result">
+            <div class="ob-screen-inner" style="align-items:center;text-align:center;">
+                <div class="ob-eyebrow" id="result-eyebrow">Your Level</div>
+                <div class="ob-result-icon" id="result-icon">🌱</div>
+                <div class="ob-result-level" id="result-level">Explorer</div>
+                <div class="ob-result-tagline" id="result-tagline"></div>
+                <div class="ob-score-bars" id="ob-score-bars"></div>
+                <div class="ob-result-desc" id="result-desc"></div>
+                <button class="ob-cta-btn full" id="ob-enter-btn">Enter Orion →</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ APP SCREEN (IDE Shell) ═══════════════ -->
+<div id="app-screen">
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <div class="toolbar-logo magnetic"><span class="logo-dot"></span> ORION</div>
+        </div>
+        <div class="toolbar-center">
+            <span class="toolbar-title">Decision Intelligence Platform</span>
+        </div>
+        <div class="toolbar-right">
+            <button class="toolbar-btn" id="theme-toggle-btn" title="Toggle theme">◐</button>
+            <button class="toolbar-btn" id="user-menu-btn" title="Account">👤</button>
+        </div>
+    </div>
+
+    <!-- IDE BODY -->
+    <div class="ide-body">
+        <!-- LEFT SIDEBAR -->
+        <div class="ide-sidebar">
+            <div class="sidebar-tab-bar">
+                <button class="sidebar-tab active" data-tab="workspaces" title="Workspaces">📁</button>
+                <button class="sidebar-tab" data-tab="tools" title="Tools">🛠️</button>
+            </div>
+            <div class="sidebar-panel">
+                <div class="sidebar-panel-title">Workspaces</div>
+                <input type="text" class="search-input" placeholder="Search workspaces…">
+                <div id="workspace-list"></div>
+                <button class="new-workspace-btn magnetic">+ New Workspace</button>
+            </div>
+        </div>
+
+        <!-- CENTER EDITOR -->
+        <div class="ide-editor">
+            <!-- Empty state -->
+            <div class="editor-empty active" id="editor-empty">
+                <h3>Select or create a workspace</h3>
+                <p>Your initiatives will appear here. Start by creating a new workspace from the sidebar.</p>
+            </div>
+
+            <!-- Workspace view -->
+            <div id="workspace-view" class="hidden" style="display:flex;flex-direction:column;height:100%;">
+                <div class="editor-tab-bar">
+                    <div class="editor-tab" data-editor-tab="chat">💬 Chat</div>
+                    <div class="editor-tab active" data-editor-tab="grid">📐 Grid</div>
+                    <div class="editor-tab" data-editor-tab="eval">📊 Evaluate</div>
+                    <div class="editor-tab" data-editor-tab="sim">🎮 Simulate</div>
+                </div>
+                <div class="editor-header">
+                    <div class="editor-header-left">
+                        <span id="workspace-title" contenteditable="false">Workspace</span>
+                        <span class="level-pill explorer" id="level-pill">EXPLORER</span>
+                    </div>
+                    <span class="editor-hint">Cmd+Enter to send</span>
+                </div>
+
+                <!-- Chat tab -->
+                <div class="messages-container hidden" id="chat-panel"></div>
+                <div class="input-area hidden" id="chat-input-area">
+                    <div class="input-wrapper">
+                        <textarea id="message-input" rows="1" placeholder="Ask Orion about your initiative…"></textarea>
+                        <button class="send-btn magnetic" title="Send">↑</button>
+                    </div>
+                    <div class="input-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</div>
+                </div>
+
+                <!-- Grid tab (Power BI Style) -->
+                <div id="grid-view" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+                    <div class="grid-toolbar">
+                        <div class="grid-toolbar-left" style="position:relative;">
+                            <button class="add-container-btn" id="add-container-toggle">+ Add Container</button>
+                            <div class="add-menu" id="add-container-menu"></div>
+                            <span class="grid-status" id="grid-status">0 containers</span>
+                        </div>
+                        <div class="grid-toolbar-right">
+                            <div class="req-warning hidden" id="grid-req-warning">⚠️ Complete Problem, Solution & Resources to analyze</div>
+                            <button class="analyze-btn" id="grid-analyze-btn" disabled>🔍 Analyze Project</button>
+                            <button class="simulate-btn" id="grid-simulate-btn">🎮 Simulate</button>
+                        </div>
+                    </div>
+                    <div class="grid-canvas" id="grid-canvas" style="flex:1;overflow-y:auto;position:relative;"></div>
+                    <div id="grid-analysis-results" class="hidden"></div>
+                </div>
+
+                <!-- Eval tab -->
+                <div id="evaluation-view" class="hidden" style="flex:1;overflow-y:auto;padding:36px;">
+                    <div class="eval-header"><h2>Viability Stress Test</h2><p>Answer these questions to get an AI-generated scorecard.</p></div>
+                    <div class="eval-grid">
+                        <div class="eval-box gsap-reveal"><div class="eval-box-title">Vision & Problem <span class="badge">Core</span></div><div class="eval-box-body"><div class="eval-q-item-inline"><span class="eval-q-text-small">What specific problem are you solving?</span><textarea class="eval-input-small" rows="2" placeholder="Describe the problem…"></textarea></div></div></div>
+                        <div class="eval-box gsap-reveal"><div class="eval-box-title">Strategy <span class="badge">Plan</span></div><div class="eval-box-body"><div class="eval-q-item-inline"><span class="eval-q-text-small">What's your go-to-market approach?</span><textarea class="eval-input-small" rows="2" placeholder="How will you reach users…"></textarea></div></div></div>
+                        <div class="eval-box gsap-reveal"><div class="eval-box-title">Resources <span class="badge">Ops</span></div><div class="eval-box-body"><div class="eval-q-item-inline"><span class="eval-q-text-small">What resources do you have/need?</span><textarea class="eval-input-small" rows="2" placeholder="Team, funding, tech…"></textarea></div></div></div>
+                        <div class="eval-box gsap-reveal"><div class="eval-box-title">Risks <span class="badge">Risk</span></div><div class="eval-box-body"><div class="eval-q-item-inline"><span class="eval-q-text-small">What could go wrong?</span><textarea class="eval-input-small" rows="2" placeholder="Key risk factors…"></textarea></div></div></div>
+                    </div>
+                    <div class="eval-action-section"><button class="btn-primary btn-full" id="eval-finalize-btn" disabled>Generate Scorecard ✦</button></div>
+                    <div id="eval-loading" class="hidden"><div class="eval-orb"></div><p>Generating scorecard…</p></div>
+                    <div id="eval-results" class="hidden"></div>
+                </div>
+
+                <!-- Sim tab -->
+                <div id="sim-view" class="hidden" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+                    <div class="sim-topbar">
+                        <div class="sim-topbar-left">
+                            <span class="sim-logo">Orion</span><span class="sim-logo-sub">Simulation</span>
+                            <div class="sim-divider"></div>
+                            <span class="sim-idea-label" id="sim-idea-label"></span>
+                        </div>
+                        <div class="sim-topbar-right">
+                            <div class="metric-pill" id="mp-funds"><span class="mp-icon">💰</span><span class="mp-label">Funds</span><span class="mp-value" id="mp-funds-val">100</span></div>
+                            <div class="metric-pill" id="mp-trust"><span class="mp-icon">🤝</span><span class="mp-label">Trust</span><span class="mp-value" id="mp-trust-val">50</span></div>
+                            <div class="metric-pill" id="mp-impact"><span class="mp-icon">📊</span><span class="mp-label">Impact</span><span class="mp-value" id="mp-impact-val">0</span></div>
+                            <div class="metric-pill" id="mp-sustainability"><span class="mp-icon">♻️</span><span class="mp-label">Sustain</span><span class="mp-value" id="mp-sustainability-val">50</span></div>
+                            <button class="back-btn" id="sim-back-btn" title="Exit simulation">✕</button>
+                        </div>
+                    </div>
+                    <div class="sim-shell">
+                        <div class="sim-center">
+                            <div class="sim-tab-bar">
+                                <button class="sim-tab active" data-panel="panel-decisions">🎯 Decisions</button>
+                                <button class="sim-tab" data-panel="panel-resources">📦 Resources</button>
+                                <button class="sim-tab" data-panel="panel-stakeholders">🤝 Stakeholders</button>
+                            </div>
+                            <div class="sim-tab-panels">
+                                <div class="sim-panel active" id="panel-decisions"><div class="sim-empty-state"><p>Click "Start" to begin the simulation.</p></div></div>
+                                <div class="sim-panel" id="panel-resources"><div class="panel-title">Resource Allocation</div><p class="resource-instructions">Adjust how you allocate resources across your initiative.</p><div class="slider-group" id="resource-sliders"></div></div>
+                                <div class="sim-panel" id="panel-stakeholders"><div class="panel-title">Stakeholder Navigation</div><p class="resource-instructions">Choose a stakeholder to negotiate with.</p><div class="stakeholder-grid" id="stakeholder-grid"></div></div>
+                            </div>
+                        </div>
+                        <div class="sim-right">
+                            <div class="live-metrics">
+                                <div class="live-metric-row"><span class="lm-label">Funds</span><div class="lm-bar-track"><div class="lm-bar-fill" id="lm-funds-fill" style="background:var(--green)"></div></div><span class="lm-value" id="lm-funds-val">100%</span></div>
+                                <div class="live-metric-row"><span class="lm-label">Trust</span><div class="lm-bar-track"><div class="lm-bar-fill" id="lm-trust-fill" style="background:var(--accent)"></div></div><span class="lm-value" id="lm-trust-val">50%</span></div>
+                                <div class="live-metric-row"><span class="lm-label">Impact</span><div class="lm-bar-track"><div class="lm-bar-fill" id="lm-impact-fill" style="background:var(--purple)"></div></div><span class="lm-value" id="lm-impact-val">0%</span></div>
+                                <div class="live-metric-row"><span class="lm-label">Sustain</span><div class="lm-bar-track"><div class="lm-bar-fill" id="lm-sustainability-fill" style="background:var(--amber)"></div></div><span class="lm-value" id="lm-sustainability-val">50%</span></div>
+                            </div>
+                            <div class="compass-section">
+                                <div class="compass-label">Trust vs Sustainability</div>
+                                <div class="compass-plot"><div class="compass-axis-x"></div><div class="compass-axis-y"></div><div class="compass-point" id="compass-dot"></div></div>
+                            </div>
+                            <div class="impact-log-section">
+                                <div class="impact-log-header"><span class="impact-log-title">Impact Log</span><span class="log-count" id="log-count">0</span></div>
+                                <ul id="impact-log-list"><li class="log-empty-msg">No decisions recorded yet.</li></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="ide-right-panel">
+            <div class="right-panel-empty" id="rp-empty">
+                <span style="font-size:28px;margin-bottom:6px;">📋</span>
+                <span>Select a workspace to see details</span>
+            </div>
+            <div class="right-panel-content hidden" id="rp-content">
+                <div class="right-panel-section">
+                    <div class="right-panel-label">Initiative</div>
+                    <div class="detail-row"><span id="rp-idea-text">—</span></div>
+                </div>
+                <div class="right-panel-section">
+                    <div class="right-panel-label">Level</div>
+                    <div class="detail-row"><span id="rp-level-text">—</span></div>
+                </div>
+                <div class="right-panel-section">
+                    <div class="right-panel-label">Stats</div>
+                    <div class="detail-row"><span id="rp-msg-count">0 messages</span></div>
+                </div>
+                <div class="right-panel-section">
+                    <div class="right-panel-label">Actions</div>
+                    <button class="btn-primary btn-full btn-sm" id="rp-eval-btn" style="margin-bottom:8px;">📊 Run Viability Test</button>
+                    <button class="btn-ghost btn-full btn-sm" id="rp-sim-btn">🎮 Launch Simulation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+        <div class="status-left"><span class="status-dot"></span><span class="status-item">Connected</span><span class="status-sep">|</span><span class="status-item" id="status-user">—</span></div>
+        <div class="status-right"><span class="status-item" id="status-level">—</span><span class="status-sep">|</span><span class="status-item">Orion v2.0</span></div>
+    </div>
+</div>
+
+<!-- ═══════════════ MODAL OVERLAY ═══════════════ -->
+<div id="orion-modal-overlay"><div id="orion-modal"></div></div>
+
+<!-- ═══════════════ APP BOOTSTRAP ═══════════════ -->
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // js/ui/sidebar.js
 // Takes onSelect callback — never imports from app.js
 import { db } from "../core/firebase-config.js";
@@ -72,3 +73,87 @@ function render(list, onSelect) {
     // Bind scroll depth physics
     bindScrollDepth(wsList, ".ws-item");
 }
+=======
+/**
+ * ORION — Sidebar: Workspace explorer with real-time Firestore sync
+ */
+import { State } from "../state.js";
+import { listenWorkspaces, deleteWorkspace, createWorkspace } from "../db.js";
+import { OrionAnim } from "../gsap-animations.js";
+import { OrionModal } from "./modals.js";
+
+let unsubscribe = null;
+
+export function initSidebar() {
+    const list = document.getElementById("workspace-list");
+    const searchInput = document.querySelector(".search-input");
+    const newBtn = document.querySelector(".new-workspace-btn");
+
+    // Real-time listener
+    State.on("auth:signedIn", () => {
+        if (unsubscribe) unsubscribe();
+        unsubscribe = listenWorkspaces((workspaces) => renderList(workspaces));
+    });
+
+    // Search filter
+    if (searchInput) {
+        searchInput.addEventListener("input", () => {
+            const q = searchInput.value.toLowerCase();
+            const all = State.get("workspaces") || [];
+            renderList(q ? all.filter(w => (w.title || w.idea || "").toLowerCase().includes(q)) : all);
+        });
+    }
+
+    // New workspace
+    if (newBtn) {
+        newBtn.addEventListener("click", async () => {
+            const idea = await OrionModal.prompt("New Workspace", "Describe your social initiative idea:", "e.g. A mental health app for rural teens…", 10);
+            if (!idea) return;
+            const wsId = await createWorkspace(idea, State.get("userLevel") || "explorer");
+            if (wsId) State.emit("workspace:select", wsId);
+        });
+    }
+}
+
+function renderList(workspaces) {
+    const list = document.getElementById("workspace-list");
+    if (!list) return;
+    list.innerHTML = "";
+
+    if (!workspaces.length) {
+        list.innerHTML = `<div class="sidebar-empty-msg">No workspaces yet.<br>Click <strong>+ New</strong> to start.</div>`;
+        return;
+    }
+
+    workspaces.forEach((ws, i) => {
+        const el = document.createElement("div");
+        el.className = "workspace-item" + (ws.id === State.get("currentWorkspaceId") ? " active" : "");
+        el.innerHTML = `
+            <span class="workspace-item-icon">📄</span>
+            <span class="workspace-item-content">${ws.title || ws.idea || "Untitled"}</span>
+            <button class="delete-workspace-btn" title="Delete">✕</button>`;
+
+        el.addEventListener("click", (e) => {
+            if (e.target.closest(".delete-workspace-btn")) return;
+            State.emit("workspace:select", ws.id);
+        });
+
+        el.querySelector(".delete-workspace-btn").addEventListener("click", async (e) => {
+            e.stopPropagation();
+            const ok = await OrionModal.confirm("Delete Workspace", `Delete "${ws.title || "this workspace"}"? This cannot be undone.`, true);
+            if (ok) deleteWorkspace(ws.id);
+        });
+
+        list.appendChild(el);
+        OrionAnim.animateWorkspaceItem(el, i);
+    });
+}
+
+// Highlight active workspace on change
+State.on("currentWorkspaceId:changed", () => {
+    document.querySelectorAll(".workspace-item").forEach((el, i) => {
+        const ws = (State.get("workspaces") || [])[i];
+        if (ws) el.classList.toggle("active", ws.id === State.get("currentWorkspaceId"));
+    });
+});
+>>>>>>> 666476a (final)

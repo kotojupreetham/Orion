@@ -1,0 +1,225 @@
+/* ═══════════════════════════════════════════════════════════════
+   ORION — Base Styles
+   Source: temp-UI animation/app/style.css §3-5
+   Reset · Typography · Scrollbars · Utilities
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* ══════════════════════════════════════════════════════════════
+   1. GLOBAL RESET
+   ══════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--bg-primary);
+    color: var(--text);
+    overflow: hidden;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    will-change: transform, opacity;
+}
+
+input, textarea, select {
+    font-family: inherit;
+    will-change: transform, opacity;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+img, svg { display: block; max-width: 100%; }
+ul, ol { list-style: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   2. SCROLLBARS
+   ══════════════════════════════════════════════════════════════ */
+/* Hide by default */
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; }
+
+/* Thin scrollbars where needed */
+.scrollable,
+.messages-container,
+#workspace-list,
+.sim-card-body,
+#impact-log-list {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+}
+.scrollable::-webkit-scrollbar,
+.messages-container::-webkit-scrollbar,
+#workspace-list::-webkit-scrollbar {
+    display: block;
+    width: 4px;
+}
+.scrollable::-webkit-scrollbar-thumb,
+.messages-container::-webkit-scrollbar-thumb,
+#workspace-list::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: var(--radius-full);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   3. TYPOGRAPHY
+   ══════════════════════════════════════════════════════════════ */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    color: var(--text);
+}
+
+h1 { font-size: 28px; }
+h2 { font-size: 22px; }
+h3 { font-size: 17px; }
+h4 { font-size: 14px; }
+
+.label-xs {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.label-sm {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   4. FOCUS STYLES
+   ══════════════════════════════════════════════════════════════ */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   5. GSAP ANIMATION UTILITY CLASSES
+   ══════════════════════════════════════════════════════════════ */
+/* Mark elements for staggered reveal */
+.gsap-reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    will-change: transform, opacity;
+}
+
+.gsap-reveal-x {
+    opacity: 0;
+    transform: translateX(-16px);
+    will-change: transform, opacity;
+}
+
+.gsap-reveal-scale {
+    opacity: 0;
+    transform: scale(0.92);
+    will-change: transform, opacity;
+}
+
+.gsap-fade {
+    opacity: 0;
+    will-change: opacity;
+}
+
+/* After GSAP animates them in */
+.gsap-visible {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+/* Container for stagger targets */
+.gsap-stagger > * {
+    will-change: transform, opacity;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   6. SMOOTH THEME TRANSITIONS
+   ══════════════════════════════════════════════════════════════ */
+html, body, * {
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: 0.25s;
+    transition-timing-function: var(--ease-smooth);
+}
+
+/* Prevent transition flash on load */
+.no-transition, .no-transition * {
+    transition: none !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   7. UTILITY CLASSES
+   ══════════════════════════════════════════════════════════════ */
+.hidden              { display: none !important; }
+.active              { display: flex !important; }
+.flex                { display: flex !important; }
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Dividers */
+.divider   { height: 1px; background: var(--border); width: 100%; }
+.divider-v { width: 1px;  background: var(--border); align-self: stretch; }
+
+/* Chips / Badges */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: var(--ws-item-bg);
+    white-space: nowrap;
+}
+.chip.accent {
+    background: var(--accent-dim);
+    border-color: var(--border-accent);
+    color: var(--accent);
+}

@@ -1,3 +1,4 @@
+
 // js/app.js — The Master Orchestrator
 // This is the ONLY file that imports from multiple modules.
 // All other modules use dependency injection (callbacks) to avoid circular deps.
@@ -246,4 +247,212 @@ function show(id) {
 function hide(id) {
     const el = document.getElementById(id);
     if (el) el.classList.add("hidden");
+}
+
+/**
+ * ═══════════════════════════════════════════════════════════════
+ *  ORION — Master Orchestrator
+ *  Boots the app, wires all modules, manages view switching
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+import { State } from "./state.js";
+import { signInWithGoogle, logOut } from "./auth.js";
+import { getUserProfile, loadWorkspace, createWorkspace } from "./db.js";
+import { OrionAnim } from "./gsap-animations.js";
+import { initSidebar } from "./ui/sidebar.js";
+import { initWorkspace, showWorkspaceView, clearWorkspaceView } from "./ui/workspace.js";
+import { initRightPanel, updateRightPanel } from "./ui/right-panel.js";
+import { initEvaluation, showEvaluation } from "./ui/evaluation.js";
+import { initSimulation, startSimulation } from "./ui/simulation.js";
+import { initOnboarding, startOnboarding } from "./ui/onboarding.js";
+import { initGrid, showGridWorkspace, clearGrid } from "./ui/grid-workspace.js";
+
+// ══════════════════════════════════════════════════════════════
+// BOOT SEQUENCE
+// ══════════════════════════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", () => {
+    // Apply saved theme immediately
+    const theme = localStorage.getItem("orion-theme") || "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+
+    // Remove no-transition after first paint
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => document.body.classList.remove("no-transition"));
+    });
+
+    // Initialize modules
+    initSidebar();
+    initWorkspace();
+    initRightPanel();
+    initEvaluation();
+    initSimulation();
+    initOnboarding();
+    initGrid();
+
+    // Initialize passive GSAP effects
+    OrionAnim.init();
+
+    // ── Auth events ──
+    State.on("auth:signedIn", handleSignIn);
+    State.on("auth:signedOut", handleSignOut);
+
+    // ── Workspace events ──
+    State.on("workspace:select", selectWorkspace);
+    State.on("workspace:cleared", () => { clearWorkspaceView(); updateRightPanel(null); });
+
+    // ── Onboarding complete ──
+    State.on("onboarding:complete", async ({ level, idea }) => {
+        State.set("userLevel", level);
+        // Auto-create first workspace
+        const wsId = await createWorkspace(idea, level);
+        if (wsId) selectWorkspace(wsId);
+    });
+
+    // ── Editor tab switching ──
+    document.querySelectorAll("[data-editor-tab]").forEach(tab => {
+        tab.addEventListener("click", () => switchEditorTab(tab.dataset.editorTab));
+    });
+
+    // ── Theme toggle ──
+    document.getElementById("theme-toggle-btn")?.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme");
+        const next = current === "dark" ? "light" : "dark";
+        State.set("theme", next);
+        OrionAnim.toggleTheme(next);
+    });
+
+    // ── Login button ──
+    document.getElementById("google-login-btn")?.addEventListener("click", signInWithGoogle);
+
+    // ── User menu ──
+    document.getElementById("user-menu-btn")?.addEventListener("click", async () => {
+        const { OrionModal } = await import("./ui/modals.js");
+        const ok = await OrionModal.confirm("Sign Out", "Are you sure you want to sign out?");
+        if (ok) logOut();
+    });
+
+    // ── Sidebar tab switching ──
+    document.querySelectorAll(".sidebar-tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+            document.querySelectorAll(".sidebar-tab").forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+        });
+    });
+
+    // ── Title editing ──
+    const titleEl = document.getElementById("workspace-title");
+    if (titleEl) {
+        titleEl.addEventListener("blur", async () => {
+            const wsId = State.get("currentWorkspaceId");
+            if (wsId) {
+                const { updateWorkspaceTitle } = await import("./db.js");
+                updateWorkspaceTitle(wsId, titleEl.textContent.trim());
+            }
+        });
+    }
+
+    // ── Evaluation action ──
+    State.on("action:evaluate", () => switchEditorTab("eval"));
+
+    // ── Simulation action ──
+    State.on("action:simulate", () => switchEditorTab("sim"));
+    State.on("simulation:exit", () => switchEditorTab("chat"));
+
+    // Wait for auth to resolve
+    setTimeout(() => {
+        if (!State.get("user")) {
+            OrionAnim.hideLoader().then(() => OrionAnim.showLogin());
+        }
+    }, 2000);
+});
+
+// ══════════════════════════════════════════════════════════════
+// AUTH HANDLERS
+// ══════════════════════════════════════════════════════════════
+async function handleSignIn(user) {
+    document.getElementById("status-user").textContent = user.email;
+
+    await OrionAnim.hideLoader();
+
+    // Check onboarding
+    const profile = await getUserProfile(user.email);
+    if (profile?.level) {
+        State.set("userLevel", profile.level);
+        document.getElementById("status-level").textContent = profile.level.toUpperCase();
+        await OrionAnim.hideLogin();
+        OrionAnim.showApp();
+    } else {
+        await OrionAnim.hideLogin();
+        OrionAnim.showApp();
+        // Start onboarding after app is visible
+        setTimeout(() => startOnboarding(false, null), 400);
+    }
+}
+
+function handleSignOut() {
+    State.set("user", null);
+    State.set("currentWorkspace", null);
+    State.set("currentWorkspaceId", null);
+    State.set("messages", []);
+    clearWorkspaceView();
+    updateRightPanel(null);
+
+    const app = document.getElementById("app-screen");
+    if (app) { app.classList.remove("active"); }
+
+    OrionAnim.showLogin();
+}
+
+// ══════════════════════════════════════════════════════════════
+// WORKSPACE SELECTION
+// ══════════════════════════════════════════════════════════════
+async function selectWorkspace(wsId) {
+    const ws = await loadWorkspace(wsId);
+    if (!ws) return;
+
+    State.set("currentWorkspaceId", wsId);
+    State.set("currentWorkspace", ws);
+    State.set("messages", ws.messages || []);
+
+    showWorkspaceView(ws);
+    updateRightPanel(ws);
+    switchEditorTab("grid");
+}
+
+// ══════════════════════════════════════════════════════════════
+// EDITOR TAB SWITCHING
+// ══════════════════════════════════════════════════════════════
+function switchEditorTab(tab) {
+    // Tab highlight
+    document.querySelectorAll("[data-editor-tab]").forEach(t => t.classList.toggle("active", t.dataset.editorTab === tab));
+
+    const chatPanel = document.querySelector(".messages-container");
+    const chatInput = document.getElementById("chat-input-area");
+    const gridView = document.getElementById("grid-view");
+    const evalView = document.getElementById("evaluation-view");
+    const simView = document.getElementById("sim-view");
+
+    // Hide all
+    [chatPanel, chatInput, gridView, evalView, simView].forEach(el => { if (el) el.classList.add("hidden"); });
+
+    if (tab === "chat") {
+        chatPanel?.classList.remove("hidden");
+        chatInput?.classList.remove("hidden");
+    } else if (tab === "grid") {
+        gridView?.classList.remove("hidden");
+        const ws = State.get("currentWorkspace");
+        if (ws) showGridWorkspace(ws);
+    } else if (tab === "eval") {
+        evalView?.classList.remove("hidden");
+        showEvaluation();
+    } else if (tab === "sim") {
+        simView?.classList.remove("hidden");
+        const ws = State.get("currentWorkspace");
+        if (ws) {
+            document.getElementById("sim-idea-label").textContent = ws.idea || "";
+            startSimulation(ws);
+        }
+    }
+
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // js/ui/right-panel.js
 // Standalone — no imports from other app modules
 
@@ -41,4 +42,43 @@ export function showRightPanel(data) {
 
 export function updateMsgCount(n) {
     if (rpMsgs) rpMsgs.textContent = n + " entries";
+=======
+/**
+ * ORION — Right Panel: workspace details + action triggers
+ */
+import { State } from "../state.js";
+import { LEVELS } from "../config.js";
+
+export function initRightPanel() {
+    const analyzeBtn = document.getElementById("rp-analyze-btn");
+    const evalBtn = document.getElementById("rp-eval-btn");
+    const simBtn = document.getElementById("rp-sim-btn");
+
+    if (analyzeBtn) analyzeBtn.addEventListener("click", () => State.emit("action:analyze"));
+    if (evalBtn) evalBtn.addEventListener("click", () => State.emit("action:evaluate"));
+    if (simBtn) simBtn.addEventListener("click", () => State.emit("action:simulate"));
+}
+
+export function updateRightPanel(ws) {
+    const empty = document.querySelector(".right-panel-empty");
+    const content = document.querySelector(".right-panel-content");
+    if (!ws) {
+        if (empty) empty.classList.remove("hidden");
+        if (content) content.classList.add("hidden");
+        return;
+    }
+    if (empty) empty.classList.add("hidden");
+    if (content) content.classList.remove("hidden");
+
+    const ideaText = document.getElementById("rp-idea-text");
+    const levelText = document.getElementById("rp-level-text");
+    const msgCount = document.getElementById("rp-msg-count");
+
+    if (ideaText) ideaText.textContent = ws.idea || "—";
+    if (levelText) {
+        const lv = LEVELS[ws.level] || LEVELS.explorer;
+        levelText.textContent = `${lv.emoji} ${lv.name}`;
+    }
+    if (msgCount) msgCount.textContent = (ws.messages || []).length + " messages";
+>>>>>>> 666476a (final)
 }
